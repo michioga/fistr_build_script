@@ -22,6 +22,13 @@
 BUILD_ROOT=`pwd`
 LIB_ROOT=${BUILD_ROOT}/local
 MAKE_PAR=4
+# compiler
+CC=gcc
+CXX=g++
+FC=gfortran
+MPICC=mpicc
+MPICXX=mpicxx
+MPIFC=mpif90
 # END modify.
 
 mkdir -p ${LIB_ROOT}/bin ${LIB_ROOT}/lib ${LIB_ROOT}/include
@@ -31,7 +38,7 @@ export PATH=${LIB_ROOT}/bin:$PATH
 # OpenBLAS-0.2.20
 ########################################
 get_openblas() {
-  git clone -b v0.2.20 https://github.com/xianyi/OpenBLAS.git
+  echo $(git clone -b v0.2.20 https://github.com/xianyi/OpenBLAS.git)
 }
 build_openblas() {
   cd OpenBLAS
@@ -49,7 +56,7 @@ get_metis() {
 build_metis() {
   tar xvf metis-5.1.0.tar.gz
   cd metis-5.1.0
-  make config prefix=${LIB_ROOT} cc=gcc
+  make config prefix=${LIB_ROOT} cc=${CC}
   make -j${MAKE_PAR}
   make install
   cd ${BUILD_ROOT}
@@ -69,6 +76,8 @@ build_scalapack() {
   cmake \
     -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
     -DCMAKE_EXE_LINKER_FLAGS="-fopenmp" \
+    -DCMAKE_C_COMPILER=${CC} \
+    -DCMAKE_Fortran_COMPILER=${FC} \
     -DBLAS_LIBRARIES=$LIB_ROOT/lib/libopenblas.a \
     -DLAPACK_LIBRARIES=$LIB_ROOT/lib/libopenblas.a \
     ..
@@ -122,9 +131,9 @@ build_trilinos() {
   cd build
   cmake \
     -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
-    -DCMAKE_C_COMPILER=mpicc \
-    -DCMAKE_CXX_COMPILER=mpicxx \
-    -DCMAKE_Fortran_COMPILER=mpif90 \
+    -DCMAKE_C_COMPILER=${MPICC} \
+    -DCMAKE_CXX_COMPILER=${MPICXX} \
+    -DCMAKE_Fortran_COMPILER=${MPIFC} \
     -DTPL_ENABLE_LAPACK=ON \
     -DTPL_ENABLE_SCALAPACK=ON \
     -DTPL_ENABLE_METIS=ON \
@@ -170,6 +179,9 @@ build_fistr() {
   cd FrontISTR
   mkdir build; cd build
   cmake \
+    -DCMAKE_C_COMPILER=${CC} \
+    -DCMAKE_CXX_COMPILER=${CXX} \
+    -DCMAKE_Fortran_COMPILER=${FC} \
     -DBLAS_LIBRARIES=${LIB_ROOT}/lib/libopenblas.a \
     -DLAPACK_LIBRARIES=${LIB_ROOT}/lib/libopenblas.a \
     ..
