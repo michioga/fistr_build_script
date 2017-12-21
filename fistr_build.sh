@@ -23,6 +23,7 @@ BUILD_ROOT=`pwd`
 LIB_ROOT=${BUILD_ROOT}/local
 MAKE_PAR=4
 COMPILER="GNU" # GNU | PGI | Intel
+MKL=0 # If you have Intel MKL(not Free version), set 1.
 # END modify.
 
 # Misc. settings
@@ -53,49 +54,64 @@ set_compiler() {
 ########################################
 # OpenBLAS-0.2.20
 ########################################
+OPENBLAS="OpenBLAS"
 get_openblas() {
-  (git clone -b v0.2.20 https://github.com/xianyi/OpenBLAS.git) && (touch get_openblas_done)
+  if [ ! -d ${OPENBLAS} ]; then
+    git clone -b v0.2.20 https://github.com/xianyi/${OPENBLAS}.git
+  else
+    echo "Already downloaded ${OPENBLAS}"
+  fi
 }
 build_openblas() {
-  if [ -e get_openblas_done ]; then
-    cd ${OPENBLAS_ARCHVIE}
+  if [ -d ${OPENBLAS} ]; then
+    cd ${OPENBLAS}
     make -j${MAKE_PAR} CC=${CC} FC=${FC} DYNAMIC_ARCH=1 USE_OPENMP=1 NO_SHARED=1 BINARY=64
     make PREFIX=${LIB_ROOT} install
     cd ${BUILD_ROOT}
   else
-    echo "No OpenBLAS archive."
+    echo "No ${OPENBLAS} archive."
   fi
 }
 
 ########################################
 # metis-5.1.0
 ########################################
+METIS="metis-5.1.0"
 get_metis() {
-  curl ${CURL_FLAGS} -L -O http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/metis-5.1.0.tar.gz
+  if [ ! -f ${METIS}.tar.gz ]; then
+    curl ${CURL_FLAGS} -L -O http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/${METIS}.tar.gz
+  else
+    echo "Already downloaded ${METIS}.tar.gz"
+  fi
 }
 build_metis() {
-  if [ -e metis-5.1.0.tar.gz ]; then
-    tar xvf metis-5.1.0.tar.gz
-    cd metis-5.1.0
+  if [ -f ${METIS}.tar.gz ]; then
+    tar xvf ${METIS}.tar.gz
+    cd ${METIS}
     make config prefix=${LIB_ROOT} cc=${CC}
     make -j${MAKE_PAR}
     make install
     cd ${BUILD_ROOT}
   else
-    echo "No METIS archive."
+    echo "No ${METIS} archive"
   fi
 }
 
 ########################################
 # scalapack-2.0.2
 ########################################
+SCALAPACK="scalapack-2.0.2"
 get_scalapack() {
-  curl ${CURL_FLAGS} -L -O http://www.netlib.org/scalapack/scalapack-2.0.2.tgz
+  if [ ! -f ${SCALAPACK}.tgz ]; then
+    curl ${CURL_FLAGS} -L -O http://www.netlib.org/scalapack/${SCALAPACK}.tgz
+  else
+    echo "Already downloaded ${SCALAPACK}.tgz"
+  fi
 }
 build_scalapack() {
-  if [ -e scalapack-2.0.2.tgz ]; then
-    tar xvf scalapack-2.0.2.tgz
-    cd scalapack-2.0.2
+  if [ -f ${SCALAPACK}.tgz ]; then
+    tar xvf ${SCALAPACK}.tgz
+    cd ${SCALAPACK}
     mkdir build
     cd build
     cmake \
@@ -110,20 +126,25 @@ build_scalapack() {
     make install
     cd ${BUILD_ROOT}
   else
-    echo "No scalapack archive."
+    echo "No ${SCALAPACK} archive"
   fi
 }
 
 ########################################
 # MUMPS-5.1.2
 ########################################
+MUMPS="MUMPS_5.1.2"
 get_mumps() {
-  curl ${CURL_FLAGS} -L -O http://mumps.enseeiht.fr/MUMPS_5.1.2.tar.gz
+  if [ ! -f ${MUMPS}.tar.gz ]; then
+    curl ${CURL_FLAGS} -L -O http://mumps.enseeiht.fr/${MUMPS}.tar.gz
+  else
+    echo "Already downloaded ${MUMPS}.tar.gz"
+  fi
 }
 build_mumps() {
-  if [ -e MUMPS_5.1.2.tar.gz ]; then
-    tar xvf MUMPS_5.1.2.tar.gz
-    cd MUMPS_5.1.2
+  if [ -f ${MUMPS}.tar.gz ]; then
+    tar xvf ${MUMPS}.tar.gz
+    cd ${MUMPS}
     cp Make.inc/Makefile.inc.generic Makefile.inc
     sed -i \
       -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
@@ -145,21 +166,24 @@ build_mumps() {
     cp lib/*.a ${LIB_ROOT}/lib
     cd ${BUILD_ROOT}
   else
-    echo "No MUMPS archive."
+    echo "No ${MUMPS} archive"
   fi
 }
 
 ########################################
 # Trilinos 12.12.1
 ########################################
+TRILINOS="Trilinos"
 get_trilinos() {
-  (git clone -b trilinos-release-12-12-1 https://github.com/trilinos/Trilinos.git) && (touch get_trilinos_done)
+  if [ ! -d ${TRILINOS} ]; then
+    git clone -b trilinos-release-12-12-1 https://github.com/trilinos/${TRILINOS}.git
+  else
+    echo "Already downloaded ${TRILINOS}"
+  fi
 }
 build_trilinos() {
-  if [ -e get_trilinos_done ]; then
-    #tar xvf trilinos-12.12.1-Source.tar.bz2
-    #cd trilinos-12.12.1-Source
-    cd Trilinos
+  if [ -d ${TRILINOS} ]; then
+    cd ${TRILINOS}
     mkdir build
     cd build
     cmake \
@@ -185,21 +209,26 @@ build_trilinos() {
     make install
     cd ${BUILD_ROOT}
   else
-    echo "No Trilinos archive."
+    echo "No ${TRILINOS} archive"
   fi
 }
 
 ########################################
 # REVOCAP_Refiner-1.1.04
 ########################################
+REFINER="REVOCAP_Refiner-1.1.04"
 get_refiner() {
-  #curl -L -O http://www.multi.k.u-tokyo.ac.jp/FrontISTR/reservoir_f/link.pl?REVOCAP_Refiner-1.1.04.tar.gz
-  echo "refiner"
+  if [ ! -f ${REFINER}.tar.gz ]; then
+    #curl -L -O http://www.multi.k.u-tokyo.ac.jp/FrontISTR/reservoir_f/link.pl?${REFINER}.tar.gz
+    echo "refiner"
+  else
+    echo "Already downloaded ${REFINER}.tar.gz"
+  fi
 }
 build_refiner() {
-  if [ -e REVOCAP_Refiner-1.1.04.tar.gz ]; then
-    tar xvf REVOCAP_Refiner-1.1.04.tar.gz
-    cd REVOCAP_Refiner-1.1.04
+  if [ -f ${REFINER}.tar.gz ]; then
+    tar xvf ${REFINER}.tar.gz
+    cd ${REFINER}
     sed -i \
       -e "s|^CC = gcc|CC = ${CC}|" \
       -e "s|^CFLAGS = -O -Wall \$(DEBUGFLAG)|CFLAGS = ${CFLAGS}|" \
@@ -214,19 +243,24 @@ build_refiner() {
     cp Refiner/rcapRefiner.h ${LIB_ROOT}/include
     cd ${BUILD_ROOT}
   else
-    echo "No REVOCAP_Refiner archvie."
+    echo "No ${REFINER} archvie"
   fi
 }
 
 ########################################
 # FrontISTR
 ########################################
+FRONTISTR="FrontISTR"
 get_fistr() {
-  (git clone https://github.com/FrontISTR/FrontISTR.git) && (touch get_fistr_done)
+  if [ ! -d ${FRONTISTR} ]; then
+    git clone https://github.com/FrontISTR/${FRONTISTR}.git
+  else
+    echo "Already downloaded ${FRONTISTR}"
+  fi
 }
 build_fistr() {
-  if [ -e get_fistr_done ]; then
-    cd FrontISTR
+  if [ -d ${FRONTISTR} ]; then
+    cd ${FRONTISTR}
     mkdir build; cd build
     cmake \
       -DCMAKE_C_COMPILER=${CC} \
@@ -238,7 +272,7 @@ build_fistr() {
     make -j${MAKE_PAR}
     make install
   else
-    echo "No FrontISTR archive."
+    echo "No ${FRONTISTR} archive"
   fi
 }
 
