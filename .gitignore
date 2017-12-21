@@ -11,3 +11,10 @@ scalapack-2.0.2/
 *.swp
 Thumbs.db
 .DS_Store
+get_refiner_done
+get_scalapack_done
+get_openblas_done
+get_fistr_done
+get_metis_done
+get_mumps_done
+get_trilinos_done
