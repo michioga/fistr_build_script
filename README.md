@@ -6,7 +6,7 @@ for nonlinear structural analysis.
 FrontISTR is distributed from [FrontISTR forum](http://www.multi.k.u-tokyo.ac.jp/FrontISTR/) under MIT license.
 
 This script (`fistr_build.sh`) support easy building and installation for FrontISTR.
-This script is distributed under MIT license. Please see LICENSE.txt.
+And it is distributed under MIT license. Please see LICENSE.txt.
 
 ## Requiements
 
