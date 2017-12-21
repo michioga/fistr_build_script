@@ -284,21 +284,27 @@ export PATH=${LIB_ROOT}/bin:$PATH
 
 set_compiler
 
-get_openblas &
+if [ ${MKL} -eq 0 ]; then
+  get_openblas &
+  get_scalapack &
+fi
 get_metis &
 get_refiner &
-get_scalapack &
 get_mumps &
 get_trilinos &
 get_fistr &
 wait
 
-build_openblas &
+if [ ${MKL} -eq 0 ]; then
+  build_openblas &
+fi
 build_metis &
 build_refiner &
 wait
 
-build_scalapack
+if [ ${MKL} -eq 0 ]; then
+  build_scalapack
+fi
 build_mumps
 build_trilinos
 build_fistr
