@@ -42,7 +42,7 @@ get_openblas() {
 }
 build_openblas() {
   cd OpenBLAS
-  make -j${MAKE_PAR} DYNAMIC_ARCH=1 USE_OPENMP=1 NO_SHARED=1 BINARY=64
+  make -j${MAKE_PAR} CC=${CC} FC=${FC} DYNAMIC_ARCH=1 USE_OPENMP=1 NO_SHARED=1 BINARY=64
   make PREFIX=${LIB_ROOT} install
   cd ${BUILD_ROOT}
 }
@@ -101,8 +101,8 @@ build_mumps() {
     -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
     -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
     -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
-    -e "s|^CC      = cc|CC      = mpicc|"  \
-    -e "s|^FC      = f90|FC      = mpif90|"  \
+    -e "s|^CC      = cc|CC      = ${MPICC}|"  \
+    -e "s|^FC      = f90|FC      = ${MPIFC}|"  \
     -e "s|^FL      = f90|FL      = mpif90|" \
     -e "s|^LAPACK = -llapack|LAPACK = -L${LIB_ROOT}/lib -lopenblas|" \
     -e "s|^SCALAP  = -lscalapack -lblacs|SCALAP  = -L${LIB_ROOT}/lib -lscalapack|" \
@@ -163,6 +163,12 @@ get_refiner() {
 build_refiner() {
   tar xvf REVOCAP_Refiner-1.1.04.tar.gz
   cd REVOCAP_Refiner-1.1.04
+  sed -i \
+    -e "s|^CC = gcc|CC = ${CC}|" \
+    -e "s|^CXX = g++|CXX = ${CXX}|" \
+    -e "s|^F90 = gfortran|F90 = ${FC}|" \
+    -e "s|^LDSHARED = g++ -shared -s|LDSHARED = ${CXX} -shared -s|" \
+    MakefileConfig.in
   make
   cp lib/x86_64-linux/libRcapRefiner.a ${LIB_ROOT}/lib
   cp Refiner/rcapRefiner.h ${LIB_ROOT}/include
