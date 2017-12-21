@@ -22,17 +22,30 @@
 BUILD_ROOT=`pwd`
 LIB_ROOT=${BUILD_ROOT}/local
 MAKE_PAR=4
-# compiler
-CC=gcc
-CXX=g++
-FC=gfortran
-MPICC=mpicc
-MPICXX=mpicxx
-MPIFC=mpif90
+COMPILER="GNU" # GNU | PGI | Intel
 # END modify.
 
-mkdir -p ${LIB_ROOT}/bin ${LIB_ROOT}/lib ${LIB_ROOT}/include
-export PATH=${LIB_ROOT}/bin:$PATH
+########################################
+# Set compiler dependent option
+########################################
+set_compiler() {
+  if [ $COMPILER = "PGI" ]; then
+    CC=pgcc; CXX=pgc++; FC=pgfortran
+    MPICC=mpicc; MPICXX=mpicxx; MPIFC=mpif90
+    CFLAGS="-O2 -Minfo=all"; CXXFLAGS="-O2 -Minfo=all"; FCFLAGS="-O2 -Minfo=all"
+    OMP="-mp"
+  elif [ $COMPILER = "Intel" ]; then
+    CC=icc; CXX=icpc; FC=ifort
+    MPICC=mpiicc; MPICXX=mpiicpc; MPIFC=mpiifort
+    CFLAGS="-O2 -report"; CXXFLAGS="-O2 -report"; FCFLAGS="-O2 -report"
+    OMP="-qopenmp"
+  else # default is GNU compiler
+    CC=gcc; CXX=g++; FC=gfortran
+    MPICC=mpicc; MPICXX=mpicxx; MPIFC=mpif90
+    CFLAGS="-O -Wall"; CXXFLAGS="-O -Wall"; FCFLAGS="-O -Wall"
+    OMP="-fopenmp"
+  fi
+}
 
 ########################################
 # OpenBLAS-0.2.20
@@ -75,7 +88,7 @@ build_scalapack() {
   cd build
   cmake \
     -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
-    -DCMAKE_EXE_LINKER_FLAGS="-fopenmp" \
+    -DCMAKE_EXE_LINKER_FLAGS=${OMP} \
     -DCMAKE_C_COMPILER=${CC} \
     -DCMAKE_Fortran_COMPILER=${FC} \
     -DBLAS_LIBRARIES=$LIB_ROOT/lib/libopenblas.a \
@@ -103,13 +116,13 @@ build_mumps() {
     -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
     -e "s|^CC      = cc|CC      = ${MPICC}|"  \
     -e "s|^FC      = f90|FC      = ${MPIFC}|"  \
-    -e "s|^FL      = f90|FL      = mpif90|" \
+    -e "s|^FL      = f90|FL      = ${MPIFC}|" \
     -e "s|^LAPACK = -llapack|LAPACK = -L${LIB_ROOT}/lib -lopenblas|" \
     -e "s|^SCALAP  = -lscalapack -lblacs|SCALAP  = -L${LIB_ROOT}/lib -lscalapack|" \
     -e "s|^LIBBLAS = -lblas|LIBBLAS = -L${LIB_ROOT}/lib -lopenblas|" \
-    -e "s|^OPTF    = -O|OPTF    = -O -fopenmp|" \
-    -e "s|^OPTC    = -O -I\.|OPTC    = -O -I. -fopenmp|" \
-    -e "s|^OPTL    = -O|OPTL    = -O -fopenmp|" Makefile.inc
+    -e "s|^OPTF    = -O|OPTF    = -O ${OMP}|" \
+    -e "s|^OPTC    = -O -I\.|OPTC    = -O -I. ${OMP}|" \
+    -e "s|^OPTL    = -O|OPTL    = -O ${OMP}|" Makefile.inc
   make
   cp include/*.h ${LIB_ROOT}/include
   cp lib/*.a ${LIB_ROOT}/lib
@@ -165,8 +178,11 @@ build_refiner() {
   cd REVOCAP_Refiner-1.1.04
   sed -i \
     -e "s|^CC = gcc|CC = ${CC}|" \
+    -e "s|^CFLAGS = -O -Wall \$(DEBUGFLAG)|CFLAGS = ${CFLAGS}|" \
     -e "s|^CXX = g++|CXX = ${CXX}|" \
+    -s "s|^CXXFLAGS = -O -Wall -fPIC \$(DEBUGFLAG)|CXXFLAGS = ${CXXFLAGS}|" \
     -e "s|^F90 = gfortran|F90 = ${FC}|" \
+    -e "s|^FFLAGS = -Wall $(DEBUGFLAG)|FFLAGS = ${FCFLAGS}|" \
     -e "s|^LDSHARED = g++ -shared -s|LDSHARED = ${CXX} -shared -s|" \
     MakefileConfig.in
   make
@@ -195,6 +211,14 @@ build_fistr() {
   make install
 }
 
+########################################
+# Main
+########################################
+mkdir -p ${LIB_ROOT}/bin ${LIB_ROOT}/lib ${LIB_ROOT}/include
+export PATH=${LIB_ROOT}/bin:$PATH
+
+set_compiler
+
 get_openblas &
 get_metis &
 get_refiner &
@@ -208,6 +232,7 @@ build_openblas &
 build_metis &
 build_refiner &
 wait
+
 build_scalapack
 build_mumps
 build_trilinos
