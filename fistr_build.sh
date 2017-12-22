@@ -332,7 +332,7 @@ build_fistr() {
 # Main
 ########################################
 mkdir -p ${LIB_ROOT}/bin ${LIB_ROOT}/lib ${LIB_ROOT}/include
-export PATH=${LIB_ROOT}/bin:$PATH
+export PATH="${LIB_ROOT}/bin:$PATH"
 
 set_compiler
 
