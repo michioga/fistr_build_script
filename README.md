@@ -1,12 +1,12 @@
 # Simple automatic build script for FrontISTR
 
-FrontISTR is opensource large-scale parallel FEM(Finit Element Method) program
-for nonlinear structural analysis.
+Open-Source Large-Scale Parallel FEM program for Nonlinear Structural Analysis : FrontISTR is distributed from [FrontISTR forum](http://www.multi.k.u-tokyo.ac.jp/FrontISTR/) under MIT license.
 
-FrontISTR is distributed from [FrontISTR forum](http://www.multi.k.u-tokyo.ac.jp/FrontISTR/) under MIT license.
+Development version is also available on [Github](https://github.com/FrontISTR/FrontISTR/).
 
 This script (`fistr_build.sh`) support easy building and installation for FrontISTR.
-And it is distributed under MIT license. Please see LICENSE.txt.
+
+This script is distributed under MIT license. Please see LICENSE.txt.
 
 ## Requiements
 
