@@ -202,6 +202,7 @@ build_trilinos() {
       -DCMAKE_C_COMPILER=${MPICC} \
       -DCMAKE_CXX_COMPILER=${MPICXX} \
       -DCMAKE_Fortran_COMPILER=${MPIFC} \
+      -DTPL_ENABLE_MPI=ON \
       -DTPL_ENABLE_LAPACK=ON \
       -DTPL_ENABLE_SCALAPACK=ON \
       -DTPL_ENABLE_METIS=ON \
@@ -211,12 +212,12 @@ build_trilinos() {
       -DTrilinos_ENABLE_OpenMP=ON \
       -DTrilinos_ENABLE_Amesos=ON \
       -DTrilinos_ENABLE_ALL_OPTIONAL_PACKAGES=OFF \
-	  -DTPL_ENABLE_MKL=ON \
-	  -DTPL_ENABLE_PARDISO_MKL=ON \
-	  -DAmesos_ENABLE_PARDISO_MKL=ON \
-      -DBLAS_LIBRARY_DIR=${MKLROOT}/lib/intel64 \
-      -DLAPACK_LIBRARY_DIR=${MKLROOT}/lib/intel64 \
-      -DSCALAPACK_LIBRARY_DIRS=${MKLROOT}/lib/intel64 \
+      -DTPL_ENABLE_MKL=ON \
+      -DTPL_ENABLE_PARDISO_MKL=ON \
+      -DAmesos_ENABLE_PARDISO_MKL=ON \
+      -DBLAS_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+      -DLAPACK_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+      -DSCALAPACK_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
       -DBLAS_LIBRARY_NAMES="mkl_intel_lp64;mkl_intel_thread;mkl_core" \
       -DLAPACK_LIBRARY_NAMES="mkl_intel_lp64;mkl_intel_thread;mkl_core" \
       -DSCALAPACK_LIBRARY_NAMES="mkl_scalapack_lp64;mkl_blacs_intelmpi_lp64" \
@@ -227,6 +228,7 @@ build_trilinos() {
       -DCMAKE_C_COMPILER=${MPICC} \
       -DCMAKE_CXX_COMPILER=${MPICXX} \
       -DCMAKE_Fortran_COMPILER=${MPIFC} \
+      -DTPL_ENABLE_MPI=ON \
       -DTPL_ENABLE_LAPACK=ON \
       -DTPL_ENABLE_SCALAPACK=ON \
       -DTPL_ENABLE_METIS=ON \
@@ -236,10 +238,12 @@ build_trilinos() {
       -DTrilinos_ENABLE_OpenMP=ON \
       -DTrilinos_ENABLE_Amesos=ON \
       -DTrilinos_ENABLE_ALL_OPTIONAL_PACKAGES=OFF \
-      -DBLAS_LIBRARY_DIR=$LIB_ROOT/lib \
-      -DLAPACK_LIBRARY_DIR=$LIB_ROOT/lib \
+      -DBLAS_LIBRARY_DIRS="${LIB_ROOT}/lib" \
+      -DLAPACK_LIBRARY_DIRS="$LIB_ROOT/lib" \
+      -DSCALAPACK_LIBRARY_DIRS="${LIB_ROOT}/lib" \
       -DBLAS_LIBRARY_NAMES="openblas" \
       -DLAPACK_LIBRARY_NAMES="openblas" \
+      -DSCALAPACK_LIBRARY_NAMES="scalapack" \
       ..
     fi
     make -j${MAKE_PAR}
