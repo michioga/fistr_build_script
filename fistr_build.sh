@@ -22,8 +22,8 @@
 BUILD_ROOT=`pwd`
 LIB_ROOT=${BUILD_ROOT}/local
 MAKE_PAR=4
-COMPILER="GNU" # GNU | PGI | Intel
-MKL=0 # 0 | 1 If you have Intel MKL(not Free version), set 1.
+COMPILER="Intel" # GNU | PGI | Intel
+MKL=1 # 0 | 1 If you have Intel MKL(not Free version), set 1.
 # END modify.
 
 # Misc. settings
@@ -234,6 +234,10 @@ build_trilinos() {
       -DTrilinos_ENABLE_ALL_OPTIONAL_PACKAGES=OFF \
       -DTPL_ENABLE_MKL=ON \
       -DTPL_ENABLE_PARDISO_MKL=ON \
+      -DMKL_INCLUDE_DIRS="${MKLROOT}/include" \
+      -DMKL_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+      -DPARDISO_MKL_INCLUDE_DIRS="${MKLROOT}/include" \
+	  -DPARDISO_MKL_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
       -DAmesos_ENABLE_PARDISO_MKL=ON \
       -DBLAS_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
       -DLAPACK_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
@@ -336,6 +340,7 @@ build_fistr() {
         -DBLAS_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so" \
         -DLAPACK_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so" \
         -DSCALAPACK_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_scalapack_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so;${MKLROOT}/lib/intel64/libmkl_blacs_intelmpi_lp64.so;iomp5;pthread;m;dl" \
+		-DWITH_MKL=1 \
         ..
     else
       cmake \
