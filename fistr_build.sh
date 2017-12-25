@@ -22,8 +22,8 @@
 BUILD_ROOT=`pwd`
 LIB_ROOT=${BUILD_ROOT}/local
 MAKE_PAR=4
-COMPILER="Intel" # GNU | PGI | Intel
-MKL=1 # 0 | 1 If you have Intel MKL(not Free version), set 1.
+COMPILER="GNU" # GNU | PGI | Intel
+MKL=0 # 0 | 1 If you have Intel MKL(not Free version), set 1.
 # END modify.
 
 # Misc. settings
