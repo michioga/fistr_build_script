@@ -63,6 +63,10 @@ get_openblas() {
   fi
 }
 build_openblas() {
+  if [ -f ${LIB_ROOT}/lib/libopenblas.a ]; then
+    echo "skip building ${OPENBLAS}"
+    return
+  fi
   if [ -d ${OPENBLAS} ]; then
     cd ${OPENBLAS}
     make -j${MAKE_PAR} CC=${CC} FC=${FC} DYNAMIC_ARCH=1 USE_OPENMP=1 NO_SHARED=1 BINARY=64
@@ -85,6 +89,10 @@ get_metis() {
   fi
 }
 build_metis() {
+  if [ -f ${LIB_ROOT}/lib/libmetis.a ]; then
+    echo "skip building ${METIS}"
+    return
+  fi
   if [ -f ${METIS}.tar.gz ]; then
     tar xvf ${METIS}.tar.gz
     cd ${METIS}
@@ -109,6 +117,10 @@ get_scalapack() {
   fi
 }
 build_scalapack() {
+  if [ -f ${LIB_ROOT}/lib/libscalapack.a ]; then
+    echo "skip building ${SCALAPACK}"
+    return
+  fi
   if [ -f ${SCALAPACK}.tgz ]; then
     tar xvf ${SCALAPACK}.tgz
     cd ${SCALAPACK}
@@ -142,6 +154,10 @@ get_mumps() {
   fi
 }
 build_mumps() {
+  if [ -f ${LIB_ROOT}/lib/libpord.a -a -f ${LIB_ROOT}/lib/libdmumps.a -a -f ${LIB_ROOT}/lib/libmumps_common.a ]; then
+    echo "skip building ${MUMPS}"
+    return
+  fi
   if [ -f ${MUMPS}.tar.gz ]; then
     tar xvf ${MUMPS}.tar.gz
     cd ${MUMPS}
@@ -192,6 +208,10 @@ get_trilinos() {
   fi
 }
 build_trilinos() {
+  if [ -f ${LIB_ROOT}/TrilinosRepoVersion.txt ]; then
+    echo "skip building ${TRILINOS}"
+    return
+  fi
   if [ -d ${TRILINOS} ]; then
     cd ${TRILINOS}
     mkdir build
@@ -267,6 +287,9 @@ get_refiner() {
   fi
 }
 build_refiner() {
+  if [ -f ${LIB_ROOT}/lib/libRcapRefiner.a ]; then
+    echo "skip building ${REFINER}"
+  fi
   if [ -f ${REFINER}.tar.gz ]; then
     tar xvf ${REFINER}.tar.gz
     cd ${REFINER}
