@@ -22,7 +22,7 @@
 BUILD_ROOT=`pwd`
 LIB_ROOT=${BUILD_ROOT}/local
 MAKE_PAR=4
-COMPILER="IntelOMPI" # GNU | PGI | Intel | IntelOMPI
+COMPILER="GNU" # GNU | PGI | Intel | IntelOMPI
 # END modify.
 
 # Misc. settings
@@ -395,14 +395,14 @@ get_trilinos &
 get_fistr &
 wait
 
-if [ ${COMPILER} = "GNU"  ]; then
+if [ ${COMPILER} = "GNU" ]; then
   build_openblas &
 fi
 build_metis &
 build_refiner &
 wait
 
-if [ ${COMPILER} = "GNU"  ]; then
+if [ ${COMPILER} = "GNU" ]; then
   build_scalapack
 fi
 build_mumps
