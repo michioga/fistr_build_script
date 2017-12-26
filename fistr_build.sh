@@ -232,7 +232,7 @@ build_trilinos() {
     cd ${TRILINOS}
     mkdir build
     cd build
-    if [ ${COMPILER} = "Intel" ] || [ ${COMPILER} = "IntelOMPI" ]; then
+    if [ ${COMPILER} = "Intel" ]; then
       cmake \
       -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
       -DCMAKE_C_COMPILER=${MPICC} \
@@ -261,6 +261,36 @@ build_trilinos() {
       -DBLAS_LIBRARY_NAMES="mkl_intel_lp64;mkl_intel_thread;mkl_core" \
       -DLAPACK_LIBRARY_NAMES="mkl_intel_lp64;mkl_intel_thread;mkl_core" \
       -DSCALAPACK_LIBRARY_NAMES="mkl_scalapack_lp64;mkl_blacs_intelmpi_lp64" \
+	  ..
+    elif [ ${COMPILER} = "IntelOMPI" ]; then
+      cmake \
+      -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
+      -DCMAKE_C_COMPILER=${MPICC} \
+      -DCMAKE_CXX_COMPILER=${MPICXX} \
+      -DCMAKE_Fortran_COMPILER=${MPIFC} \
+      -DTPL_ENABLE_MPI=ON \
+      -DTPL_ENABLE_LAPACK=ON \
+      -DTPL_ENABLE_SCALAPACK=ON \
+      -DTPL_ENABLE_METIS=ON \
+      -DTPL_ENABLE_MUMPS=ON \
+      -DTrilinos_ENABLE_ML=ON \
+      -DTrilinos_ENABLE_Zoltan=ON \
+      -DTrilinos_ENABLE_OpenMP=ON \
+      -DTrilinos_ENABLE_Amesos=ON \
+      -DTrilinos_ENABLE_ALL_OPTIONAL_PACKAGES=OFF \
+      -DTPL_ENABLE_MKL=ON \
+      -DTPL_ENABLE_PARDISO_MKL=ON \
+      -DMKL_INCLUDE_DIRS="${MKLROOT}/include" \
+      -DMKL_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+      -DPARDISO_MKL_INCLUDE_DIRS="${MKLROOT}/include" \
+	  -DPARDISO_MKL_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+      -DAmesos_ENABLE_PARDISO_MKL=ON \
+      -DBLAS_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+      -DLAPACK_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+      -DSCALAPACK_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+      -DBLAS_LIBRARY_NAMES="mkl_intel_lp64;mkl_intel_thread;mkl_core" \
+      -DLAPACK_LIBRARY_NAMES="mkl_intel_lp64;mkl_intel_thread;mkl_core" \
+      -DSCALAPACK_LIBRARY_NAMES="mkl_scalapack_lp64;mkl_blacs_openmpi_lp64" \
 	  ..
     else # Default
       cmake \
@@ -346,7 +376,7 @@ build_fistr() {
   if [ -d ${FRONTISTR} ]; then
     cd ${FRONTISTR}
     mkdir build; cd build
-    if [ ${COMPILER} = "Intel" ] || [ ${COMPILER} = "IntelOMPI" ]; then
+    if [ ${COMPILER} = "Intel" ]; then
       cmake \
         -DCMAKE_INSTALL_PREFIX=${HOME}/local \
         -DCMAKE_PREFIX_PATH=${LIB_ROOT} \
@@ -356,6 +386,18 @@ build_fistr() {
         -DBLAS_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so" \
         -DLAPACK_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so" \
         -DSCALAPACK_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_scalapack_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so;${MKLROOT}/lib/intel64/libmkl_blacs_intelmpi_lp64.so;iomp5;pthread;m;dl" \
+        -DWITH_MKL=1 \
+        ..
+    elif [ ${COMPILER} = "IntelOMPI" ]; then
+      cmake \
+        -DCMAKE_INSTALL_PREFIX=${HOME}/local \
+        -DCMAKE_PREFIX_PATH=${LIB_ROOT} \
+        -DCMAKE_C_COMPILER=${CC} \
+        -DCMAKE_CXX_COMPILER=${CXX} \
+        -DCMAKE_Fortran_COMPILER=${FC} \
+        -DBLAS_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so" \
+        -DLAPACK_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so" \
+        -DSCALAPACK_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_scalapack_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so;${MKLROOT}/lib/intel64/libmkl_blacs_openmpi_lp64.so;iomp5;pthread;m;dl" \
         -DWITH_MKL=1 \
         ..
     else
