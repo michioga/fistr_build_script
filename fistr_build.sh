@@ -22,8 +22,7 @@
 BUILD_ROOT=`pwd`
 LIB_ROOT=${BUILD_ROOT}/local
 MAKE_PAR=4
-COMPILER="GNU" # GNU | PGI | Intel
-MKL=0 # 0 | 1 If you have Intel MKL(not Free version), set 1.
+COMPILER="GNU" # GNU | PGI | Intel | IntelOMPI
 # END modify.
 
 # Misc. settings
@@ -41,6 +40,12 @@ set_compiler() {
   elif [ $COMPILER = "Intel" ]; then
     CC=icc; CXX=icpc; FC=ifort
     MPICC=mpiicc; MPICXX=mpiicpc; MPIFC=mpiifort
+    CFLAGS="-O2 -report"; CXXFLAGS="-O2 -report"; FCFLAGS="-O2 -report"
+    OMP="-qopenmp"
+  elif [ $COMPILER = "IntelOMPI" ]; then
+    CC=icc; CXX=icpc; FC=ifort
+    MPICC=mpicc; MPICXX=mpicxx; MPIFC=mpifort
+	export OMPI_CC=${CC}; export OMPI_CXX=${CXX}; export OMPI_FC=${FC}
     CFLAGS="-O2 -report"; CXXFLAGS="-O2 -report"; FCFLAGS="-O2 -report"
     OMP="-qopenmp"
   else # default is GNU compiler
@@ -161,13 +166,24 @@ build_mumps() {
   if [ -f ${MUMPS}.tar.gz ]; then
     tar xvf ${MUMPS}.tar.gz
     cd ${MUMPS}
-	if [ ${MKL} -eq 1 ]; then # When use MKL
+	if [ ${COMPILER} -eq "Intel" ]; then
       cp Make.inc/Makefile.INTEL.PAR Makefile.inc
 	  sed -i \
         -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
         -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
         -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
         -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
+		Makefile.inc
+    elif [ ${COMPILER} -eq "IntelOMPI" ]; then
+      cp Make.inc/Makefile.INTEL.PAR Makefile.inc
+	  sed -i \
+        -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
+        -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
+        -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
+        -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
+        -e "s|^CC = mpiicc|CC = ${MPICC}|" \
+        -e "s|FC = mpiifort|FC = ${MPIFC}|" \
+        -e "s|FL = mpiifort|FL = ${MPIFC}|"
 		Makefile.inc
 	else # Default
       cp Make.inc/Makefile.inc.generic Makefile.inc
@@ -216,7 +232,7 @@ build_trilinos() {
     cd ${TRILINOS}
     mkdir build
     cd build
-    if [ ${MKL} -eq 1 ]; then # When use MKL
+    if [ ${COMPILER} = "Intel" ] || [ ${COMPILER} = "IntelOMPI" ]; then
       cmake \
       -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
       -DCMAKE_C_COMPILER=${MPICC} \
@@ -330,7 +346,7 @@ build_fistr() {
   if [ -d ${FRONTISTR} ]; then
     cd ${FRONTISTR}
     mkdir build; cd build
-    if [ ${MKL} -eq 1 ]; then
+    if [ ${COMPILER} = "Intel" ] || [ ${COMPILER} = "IntelOMPI" ]; then
       cmake \
         -DCMAKE_INSTALL_PREFIX=${HOME}/local \
         -DCMAKE_PREFIX_PATH=${LIB_ROOT} \
@@ -340,7 +356,7 @@ build_fistr() {
         -DBLAS_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so" \
         -DLAPACK_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so" \
         -DSCALAPACK_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_scalapack_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so;${MKLROOT}/lib/intel64/libmkl_blacs_intelmpi_lp64.so;iomp5;pthread;m;dl" \
-		-DWITH_MKL=1 \
+        -DWITH_MKL=1 \
         ..
     else
       cmake \
@@ -368,7 +384,7 @@ export PATH="${LIB_ROOT}/bin:$PATH"
 
 set_compiler
 
-if [ ${MKL} -eq 0 ]; then
+if [ ${COMPILER} = "GNU" ]; then
   get_openblas &
   get_scalapack &
 fi
@@ -379,14 +395,14 @@ get_trilinos &
 get_fistr &
 wait
 
-if [ ${MKL} -eq 0 ]; then
+if [ ${COMPILER} = "GNU" ]; then
   build_openblas &
 fi
 build_metis &
 build_refiner &
 wait
 
-if [ ${MKL} -eq 0 ]; then
+if [ ${COMPILER} = "GNU" ]; then
   build_scalapack
 fi
 build_mumps

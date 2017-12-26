@@ -38,7 +38,6 @@ Default value is `4`.
 BUILD_ROOT=`pwd`
 LIB_ROOT=${BUILD_ROOT}/local
 MAKE_PAR=4
-COMPILER="GNU" # GNU | PGI | Intel
-MKL=0 # If you have Intel MKL(not Free version), set 1.
+COMPILER="GNU" # GNU | PGI | Intel | IntelOMPI
 # END modify.
 ~~~
