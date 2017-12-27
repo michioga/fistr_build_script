@@ -45,7 +45,7 @@ set_compiler() {
   elif [ $COMPILER = "IntelOMPI" ]; then
     CC=icc; CXX=icpc; FC=ifort
     MPICC=mpicc; MPICXX=mpicxx; MPIFC=mpifort
-	export OMPI_CC=${CC}; export OMPI_CXX=${CXX}; export OMPI_FC=${FC}
+    export OMPI_CC=${CC}; export OMPI_CXX=${CXX}; export OMPI_FC=${FC}
     CFLAGS="-O2 -report"; CXXFLAGS="-O2 -report"; FCFLAGS="-O2 -report"
     OMP="-qopenmp"
   else # default is GNU compiler
@@ -166,17 +166,17 @@ build_mumps() {
   if [ -f ${MUMPS}.tar.gz ]; then
     tar xvf ${MUMPS}.tar.gz
     cd ${MUMPS}
-	if [ ${COMPILER} -eq "Intel" ]; then
+    if [ ${COMPILER} -eq "Intel" ]; then
       cp Make.inc/Makefile.INTEL.PAR Makefile.inc
-	  sed -i \
+      sed -i \
         -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
         -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
         -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
         -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
-		Makefile.inc
+        Makefile.inc
     elif [ ${COMPILER} -eq "IntelOMPI" ]; then
       cp Make.inc/Makefile.INTEL.PAR Makefile.inc
-	  sed -i \
+      sed -i \
         -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
         -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
         -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
@@ -184,8 +184,8 @@ build_mumps() {
         -e "s|^CC = mpiicc|CC = ${MPICC}|" \
         -e "s|FC = mpiifort|FC = ${MPIFC}|" \
         -e "s|FL = mpiifort|FL = ${MPIFC}|"
-		Makefile.inc
-	else # Default
+        Makefile.inc
+    else # Default
       cp Make.inc/Makefile.inc.generic Makefile.inc
       sed -i \
         -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
@@ -261,7 +261,7 @@ build_trilinos() {
         -DBLAS_LIBRARY_NAMES="mkl_intel_lp64;mkl_intel_thread;mkl_core" \
         -DLAPACK_LIBRARY_NAMES="mkl_intel_lp64;mkl_intel_thread;mkl_core" \
         -DSCALAPACK_LIBRARY_NAMES="mkl_scalapack_lp64;mkl_blacs_intelmpi_lp64" \
-	    ..
+        ..
     elif [ ${COMPILER} = "IntelOMPI" ]; then
       cmake \
         -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
@@ -291,7 +291,7 @@ build_trilinos() {
         -DBLAS_LIBRARY_NAMES="mkl_intel_lp64;mkl_intel_thread;mkl_core" \
         -DLAPACK_LIBRARY_NAMES="mkl_intel_lp64;mkl_intel_thread;mkl_core" \
         -DSCALAPACK_LIBRARY_NAMES="mkl_scalapack_lp64;mkl_blacs_openmpi_lp64" \
-	    ..
+        ..
     else # Default
       cmake \
         -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
