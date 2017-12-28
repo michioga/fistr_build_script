@@ -182,8 +182,8 @@ build_mumps() {
         -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
         -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
         -e "s|^CC = mpiicc|CC = ${MPICC}|" \
-        -e "s|FC = mpiifort|FC = ${MPIFC}|" \
-        -e "s|FL = mpiifort|FL = ${MPIFC}|"
+        -e "s|^FC = mpiifort|FC = ${MPIFC}|" \
+        -e "s|^FL = mpiifort|FL = ${MPIFC}|"
         Makefile.inc
     else # Default
       cp Make.inc/Makefile.inc.generic Makefile.inc
