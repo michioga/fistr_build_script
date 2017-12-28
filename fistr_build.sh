@@ -171,7 +171,7 @@ build_mumps() {
       sed -i \
         -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
         -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
-        -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
+        -e "s|^#LMETIS    = -L\$\(LMETISDIR\) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
         -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
         Makefile.inc
     elif [ ${COMPILER} -eq "IntelOMPI" ]; then
@@ -347,9 +347,9 @@ build_refiner() {
       -e "s|^CC = gcc|CC = ${CC}|" \
       -e "s|^CFLAGS = -O -Wall \$(DEBUGFLAG)|CFLAGS = ${CFLAGS}|" \
       -e "s|^CXX = g++|CXX = ${CXX}|" \
-      -s "s|^CXXFLAGS = -O -Wall -fPIC \$(DEBUGFLAG)|CXXFLAGS = ${CXXFLAGS}|" \
+      -s "s|^CXXFLAGS = -O -Wall -fPIC \$\(DEBUGFLAG\)|CXXFLAGS = ${CXXFLAGS}|" \
       -e "s|^F90 = gfortran|F90 = ${FC}|" \
-      -e "s|^FFLAGS = -Wall $(DEBUGFLAG)|FFLAGS = ${FCFLAGS}|" \
+      -e "s|^FFLAGS = -Wall \$\(DEBUGFLAG\)|FFLAGS = ${FCFLAGS}|" \
       -e "s|^LDSHARED = g++ -shared -s|LDSHARED = ${CXX} -shared -s|" \
       MakefileConfig.in
     make
