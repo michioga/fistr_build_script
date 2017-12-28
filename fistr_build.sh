@@ -37,10 +37,10 @@ set_compiler() {
     export PGI_MPI=${PGI_ROOT}/mpi/openmpi
     export PGI_SCALAPACK=${PGI_ROOT}/scalapack/scalapack-2.0.2/openmpi-2.1.2
     export PATH=${PGI}/bin:${PGI_MPI}/bin:$PATH
-    export LD_LIBRARY_PATH=${PGI}/lib:${PGI_MPI}/lib:${PGI_SCALAPACK}/lib:$LD_LIBRAR
-Y_PATH
-    CC=pgcc; CXX=pgc++; FC=pgfortran
-    MPICC=mpicc; MPICXX=mpicxx; MPIFC=mpif90
+    export LD_LIBRARY_PATH=${PGI}/lib:${PGI_MPI}/lib:${PGI_SCALAPACK}/lib:$LD_LIBRARY_PATH
+    CC=${PGI_ROOT}/bin/pgcc; CXX=${PGI_ROOT}/bin/pgc++; FC=${PGI_ROOT}/bin/pgfortran
+    MPICC=${PGI_MPI}/bin/mpicc; MPICXX=${PGI_MPI}/bin/mpicxx; MPIFC=${PGI_MPI}/bin/mpif90
+    export OMPI_CC=${CC}; export OMPI_CXX=${CXX}; export OMPI_FC=${FC}
     CFLAGS="-O2 -Minfo=all"; CXXFLAGS="-O2 -Minfo=all"; FCFLAGS="-O2 -Minfo=all"
     OMP="-mp"
   elif [ $COMPILER = "Intel" ]; then
@@ -315,12 +315,19 @@ build_trilinos() {
         -DLAPACK_LIBRARY_NAMES="mkl_intel_lp64;mkl_intel_thread;mkl_core" \
         -DSCALAPACK_LIBRARY_NAMES="mkl_scalapack_lp64;mkl_blacs_openmpi_lp64" \
         ..
-    elif [ ${COMPILER} -eq "PGI" ]; then
+    elif [ ${COMPILER} = "PGI" ]; then
       cmake \
         -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
         -DCMAKE_C_COMPILER=${MPICC} \
         -DCMAKE_CXX_COMPILER=${MPICXX} \
         -DCMAKE_Fortran_COMPILER=${MPIFC} \
+        -DBLAS_LIBRARY_DIRS="${PGI_ROOT}/lib" \
+        -DLAPACK_LIBRARY_DIRS="${PGI_ROOT}/lib" \
+        -DSCALAPACK_LIBRARY_DIRS="${PGI_SCALAPACK}/lib" \
+        -DBLAS_LIBRARY_NAMES="blas" \
+        -DLAPACK_LIBRARY_NAMES="lapack" \
+        -DSCALAPACK_LIBRARY_NAMES="scalapack" \
+        -DMPI_BASE_DIR=${PGI_MPI} \
         -DTPL_ENABLE_MPI=ON \
         -DTPL_ENABLE_LAPACK=ON \
         -DTPL_ENABLE_SCALAPACK=ON \
@@ -331,12 +338,6 @@ build_trilinos() {
         -DTrilinos_ENABLE_OpenMP=ON \
         -DTrilinos_ENABLE_Amesos=ON \
         -DTrilinos_ENABLE_ALL_OPTIONAL_PACKAGES=OFF \
-        -DBLAS_LIBRARY_DIRS="${PGI_ROOT}/lib" \
-        -DLAPACK_LIBRARY_DIRS="${PGI_ROOT}/lib" \
-        -DSCALAPACK_LIBRARY_DIRS="${PGI_SCALAPACK}/lib" \
-        -DBLAS_LIBRARY_NAMES="blas" \
-        -DLAPACK_LIBRARY_NAMES="lapack" \
-        -DSCALAPACK_LIBRARY_NAMES="scalapack" \
         ..
     else # Default
       cmake \
@@ -385,6 +386,7 @@ get_refiner() {
 build_refiner() {
   if [ -f ${LIB_ROOT}/lib/libRcapRefiner.a ]; then
     echo "skip building ${REFINER}"
+    return
   fi
   if [ -f ${REFINER}.tar.gz ]; then
     tar xvf ${REFINER}.tar.gz
@@ -421,7 +423,7 @@ get_fistr() {
 build_fistr() {
   if [ -d ${FRONTISTR} ]; then
     cd ${FRONTISTR}
-    mkdir build; cd build; make clean
+    mkdir build; cd build
     if [ ${COMPILER} = "Intel" ]; then
       cmake \
         -DCMAKE_INSTALL_PREFIX=${HOME}/local \
