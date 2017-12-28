@@ -33,6 +33,12 @@ CURL_FLAGS="-sS --connect-timeout 10 --max-time 120 --retry 2"
 ########################################
 set_compiler() {
   if [ $COMPILER = "PGI" ]; then
+    export PGI_ROOT=/opt/pgi/linux86-64/2017
+    export PGI_MPI=${PGI_ROOT}/mpi/openmpi
+    export PGI_SCALAPACK=${PGI_ROOT}/scalapack/scalapack-2.0.2/openmpi-2.1.2
+    export PATH=${PGI}/bin:${PGI_MPI}/bin:$PATH
+    export LD_LIBRARY_PATH=${PGI}/lib:${PGI_MPI}/lib:${PGI_SCALAPACK}/lib:$LD_LIBRAR
+Y_PATH
     CC=pgcc; CXX=pgc++; FC=pgfortran
     MPICC=mpicc; MPICXX=mpicxx; MPIFC=mpif90
     CFLAGS="-O2 -Minfo=all"; CXXFLAGS="-O2 -Minfo=all"; FCFLAGS="-O2 -Minfo=all"
@@ -136,8 +142,8 @@ build_scalapack() {
       -DCMAKE_EXE_LINKER_FLAGS=${OMP} \
       -DCMAKE_C_COMPILER=${CC} \
       -DCMAKE_Fortran_COMPILER=${FC} \
-      -DBLAS_LIBRARIES=$LIB_ROOT/lib/libopenblas.a \
-      -DLAPACK_LIBRARIES=$LIB_ROOT/lib/libopenblas.a \
+      -DBLAS_LIBRARIES=${LIB_ROOT}/lib/libopenblas.a \
+      -DLAPACK_LIBRARIES=${LIB_ROOT}/lib/libopenblas.a \
       ..
     make -j${MAKE_PAR}
     make install
@@ -184,6 +190,23 @@ build_mumps() {
         -e "s|^CC = mpiicc|CC = ${MPICC}|" \
         -e "s|^FC = mpiifort|FC = ${MPIFC}|" \
         -e "s|^FL = mpiifort|FL = ${MPIFC}|"
+        Makefile.inc
+    elif [ ${COMPILER} -eq "PGI" ]; then
+      cp Make.inc/Makefile.inc.generic Makefile.inc
+      sed -i \
+        -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
+        -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
+        -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
+        -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
+        -e "s|^CC      = cc|CC      = ${MPICC}|"  \
+        -e "s|^FC      = f90|FC      = ${MPIFC}|"  \
+        -e "s|^FL      = f90|FL      = ${MPIFC}|" \
+        -e "s|^LAPACK = -llapack|LAPACK = -L${PGI_ROOT}/lib -llapack|" \
+        -e "s|^SCALAP  = -lscalapack -lblacs|SCALAP  = -L${PGI_SCALAPACK}/lib -lscalapack|" \
+        -e "s|^LIBBLAS = -lblas|LIBBLAS = -L${PGI_ROOT}/lib -lblas|" \
+        -e "s|^OPTF    = -O|OPTF    = -O ${OMP}|" \
+        -e "s|^OPTC    = -O -I\.|OPTC    = -O -I. ${OMP}|" \
+        -e "s|^OPTL    = -O|OPTL    = -O ${OMP}|" \
         Makefile.inc
     else # Default
       cp Make.inc/Makefile.inc.generic Makefile.inc
@@ -292,6 +315,29 @@ build_trilinos() {
         -DLAPACK_LIBRARY_NAMES="mkl_intel_lp64;mkl_intel_thread;mkl_core" \
         -DSCALAPACK_LIBRARY_NAMES="mkl_scalapack_lp64;mkl_blacs_openmpi_lp64" \
         ..
+    elif [ ${COMPILER} -eq "PGI" ]; then
+      cmake \
+        -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
+        -DCMAKE_C_COMPILER=${MPICC} \
+        -DCMAKE_CXX_COMPILER=${MPICXX} \
+        -DCMAKE_Fortran_COMPILER=${MPIFC} \
+        -DTPL_ENABLE_MPI=ON \
+        -DTPL_ENABLE_LAPACK=ON \
+        -DTPL_ENABLE_SCALAPACK=ON \
+        -DTPL_ENABLE_METIS=ON \
+        -DTPL_ENABLE_MUMPS=ON \
+        -DTrilinos_ENABLE_ML=ON \
+        -DTrilinos_ENABLE_Zoltan=ON \
+        -DTrilinos_ENABLE_OpenMP=ON \
+        -DTrilinos_ENABLE_Amesos=ON \
+        -DTrilinos_ENABLE_ALL_OPTIONAL_PACKAGES=OFF \
+        -DBLAS_LIBRARY_DIRS="${PGI_ROOT}/lib" \
+        -DLAPACK_LIBRARY_DIRS="${PGI_ROOT}/lib" \
+        -DSCALAPACK_LIBRARY_DIRS="${PGI_SCALAPACK}/lib" \
+        -DBLAS_LIBRARY_NAMES="blas" \
+        -DLAPACK_LIBRARY_NAMES="lapack" \
+        -DSCALAPACK_LIBRARY_NAMES="scalapack" \
+        ..
     else # Default
       cmake \
         -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
@@ -399,6 +445,17 @@ build_fistr() {
         -DLAPACK_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so" \
         -DSCALAPACK_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_scalapack_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so;${MKLROOT}/lib/intel64/libmkl_blacs_openmpi_lp64.so;iomp5;pthread;m;dl" \
         -DWITH_MKL=1 \
+        ..
+    elif [ ${COMPILER} = "PGI" ]; then
+      cmake \
+        -DCMAKE_INSTALL_PREFIX=${HOME}/local \
+        -DCMAKE_PREFIX_PATH=${LIB_ROOT} \
+        -DCMAKE_C_COMPILER=${CC} \
+        -DCMAKE_CXX_COMPILER=${CXX} \
+        -DCMAKE_Fortran_COMPILER=${FC} \
+        -DBLAS_LIBRARIES=${PGI_ROOT}/lib/libblas.a \
+        -DLAPACK_LIBRARIES=${PGI_ROOT}/lib/liblapack.a \
+        -DSCALAPACK_LIBRARIES=${PGI_SCALAPACK}/lib/libscalapack.a \
         ..
     else
       cmake \
