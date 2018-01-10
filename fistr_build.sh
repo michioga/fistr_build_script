@@ -107,12 +107,41 @@ build_metis() {
   if [ -f ${METIS}.tar.gz ]; then
     tar xvf ${METIS}.tar.gz
     cd ${METIS}
-    make config prefix=${LIB_ROOT} cc=${CC}
+    make config prefix=${LIB_ROOT} cc=${CC} openmp=1
     make -j${MAKE_PAR}
     make install
     cd ${BUILD_ROOT}
   else
     echo "No ${METIS} archive"
+  fi
+}
+
+########################################
+# parmetis-4.0.3
+# ATTN : License and edit build_mumps()
+########################################
+PARMETIS="parmetis-4.0.3"
+get_parmetis() {
+  if [ ! -f ${PARMETIS}.tar.gz ]; then
+    curl ${CURL_FLAGS} -L -O http://glaros.dtc.umn.edu/gkhome/fetch/sw/parmetis/${PARMETIS}.tar.gz
+  else
+    echo "Already downloaded ${PARMETIS}.tar.gz"
+  fi
+}
+build_parmetis() {
+  if [ -f ${LIB_ROOT}/lib/libparmetis.a ]; then
+    echo "skip building ${PARMETIS}"
+    return
+  fi
+  if [ -f ${PARMETIS}.tar.gz ]; then
+    tar xvf ${PARMETIS}.tar.gz
+    cd ${PARMETIS}
+    make config prefix=${LIB_ROOT} cc=${MPICC} cxx=${MPICXX} openmp=1
+    make -j${MAKE_PAR}
+    make install
+    cd ${BUILD_ROOT}
+  else
+    echo "No ${PARMETIS} archive"
   fi
 }
 
@@ -490,6 +519,7 @@ if [ ${COMPILER} = "GNU" ]; then
   get_scalapack &
 fi
 get_metis &
+#get_parmetis &
 get_refiner &
 get_mumps &
 get_trilinos &
@@ -500,6 +530,7 @@ if [ ${COMPILER} = "GNU" ]; then
   build_openblas &
 fi
 build_metis &
+#build_parmetis &
 build_refiner &
 wait
 
