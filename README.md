@@ -16,6 +16,7 @@ Please install following software in advance.
   - git
   - cmake
   - openmpi
+  - gcc/g++
   - gfortran
 
 ## Usage

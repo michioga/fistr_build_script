@@ -11,6 +11,8 @@
 #  - git
 #  - cmake
 #  - openmpi
+#  - gcc/g++
+#  - gfortran
 #
 # Usage
 #  sh fistr_build.sh
