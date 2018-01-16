@@ -59,7 +59,8 @@ set_compiler() {
   else # default is GNU compiler
     CC=gcc; CXX=g++; FC=gfortran
     MPICC=mpicc; MPICXX=mpicxx; MPIFC=mpif90
-    CFLAGS="-O -Wall"; CXXFLAGS="-O -Wall"; FCFLAGS="-O -Wall"
+    CFLAGS="-O3 -Wall"; CXXFLAGS="-O3 -Wall"; FCFLAGS="-O3 -Wall"
+    export OMPI_CC=${CC}; export OMPI_CXX=${CXX}; export OMPI_FC=${FC}
     OMP="-fopenmp"
   fi
 }
