@@ -2,7 +2,7 @@
 ###################################################################
 # Simple automatic build script for FrontISTR
 ###################################################################
-# Copyright (c) 2017 Michio Ogawa
+# Copyright (c) 2017-2018 Michio Ogawa
 # This software is released under the MIT License, see LICENSE.txt
 ###################################################################
 
