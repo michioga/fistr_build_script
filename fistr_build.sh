@@ -66,12 +66,12 @@ set_compiler() {
 }
 
 ########################################
-# OpenBLAS-0.2.20
+# OpenBLAS-0.3.2
 ########################################
 OPENBLAS="OpenBLAS"
 get_openblas() {
   if [ ! -d ${OPENBLAS} ]; then
-    git clone -b v0.2.20 https://github.com/xianyi/${OPENBLAS}.git
+    git clone -b v0.3.2 https://github.com/xianyi/${OPENBLAS}.git
   else
     echo "Already downloaded ${OPENBLAS}"
   fi
@@ -236,7 +236,7 @@ build_mumps() {
         -e "s|^LAPACK = -llapack|LAPACK = -L${PGI_ROOT}/lib -llapack|" \
         -e "s|^SCALAP  = -lscalapack -lblacs|SCALAP  = -L${PGI_SCALAPACK}/lib -lscalapack|" \
         -e "s|^LIBBLAS = -lblas|LIBBLAS = -L${PGI_ROOT}/lib -lblas|" \
-        -e "s|^OPTF    = -O|OPTF    = -O ${OMP}|" \
+        -e "s|^OPTF    = -O|OPTF    = -O -DBLR_MT ${OMP}|" \
         -e "s|^OPTC    = -O -I\.|OPTC    = -O -I. ${OMP}|" \
         -e "s|^OPTL    = -O|OPTL    = -O ${OMP}|" \
         Makefile.inc
@@ -253,7 +253,7 @@ build_mumps() {
         -e "s|^LAPACK = -llapack|LAPACK = -L${LIB_ROOT}/lib -lopenblas|" \
         -e "s|^SCALAP  = -lscalapack -lblacs|SCALAP  = -L${LIB_ROOT}/lib -lscalapack|" \
         -e "s|^LIBBLAS = -lblas|LIBBLAS = -L${LIB_ROOT}/lib -lopenblas|" \
-        -e "s|^OPTF    = -O|OPTF    = -O ${OMP}|" \
+        -e "s|^OPTF    = -O|OPTF    = -O -DBLR_MT ${OMP}|" \
         -e "s|^OPTC    = -O -I\.|OPTC    = -O -I. ${OMP}|" \
         -e "s|^OPTL    = -O|OPTL    = -O ${OMP}|" \
         Makefile.inc
