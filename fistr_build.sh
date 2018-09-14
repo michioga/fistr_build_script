@@ -35,7 +35,7 @@ CURL_FLAGS="-sS --connect-timeout 10 --max-time 120 --retry 2"
 ########################################
 set_compiler() {
   if [ $COMPILER = "PGI" ]; then
-    export PGI_ROOT=/opt/pgi/linux86-64/2017
+    export PGI_ROOT=/opt/pgi/linux86-64/2018
     export PGI_MPI=${PGI_ROOT}/mpi/openmpi
     export PGI_SCALAPACK=${PGI_ROOT}/scalapack/scalapack-2.0.2/openmpi-2.1.2
     export PATH=${PGI}/bin:${PGI_MPI}/bin:$PATH
@@ -447,7 +447,7 @@ build_refiner() {
 FRONTISTR="FrontISTR"
 get_fistr() {
   if [ ! -d ${FRONTISTR} ]; then
-    git clone https://github.com/FrontISTR/${FRONTISTR}.git
+    git clone git@gitlab.com:okulab/${FRONTISTR}.git
   else
     echo "Already downloaded ${FRONTISTR}"
   fi
