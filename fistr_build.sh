@@ -66,12 +66,12 @@ set_compiler() {
 }
 
 ########################################
-# OpenBLAS-0.3.2
+# OpenBLAS-0.3.5
 ########################################
 OPENBLAS="OpenBLAS"
 get_openblas() {
   if [ ! -d ${OPENBLAS} ]; then
-    git clone -b v0.3.2 https://github.com/xianyi/${OPENBLAS}.git
+    git clone -b v0.3.5 https://github.com/xianyi/${OPENBLAS}.git
   else
     echo "Already downloaded ${OPENBLAS}"
   fi
@@ -408,8 +408,9 @@ build_trilinos() {
 ########################################
 REFINER="REVOCAP_Refiner-1.1.04"
 get_refiner() {
-  if [ ! -f ${REFINER}.tar.gz ]; then
+  if [ ! -f ${REFINER}.tar.gz -o -d REVOCAP_Refiner ]; then
     #curl -L -O http://www.multi.k.u-tokyo.ac.jp/FrontISTR/reservoir_f/link.pl?${REFINER}.tar.gz
+    git clone -b v1.1.04 https://github.com/FrontISTR/REVOCAP_Refiner
     echo "refiner"
   else
     echo "Already downloaded ${REFINER}.tar.gz"
@@ -447,7 +448,7 @@ build_refiner() {
 FRONTISTR="FrontISTR"
 get_fistr() {
   if [ ! -d ${FRONTISTR} ]; then
-    git clone git@gitlab.com:okulab/${FRONTISTR}.git
+    git clone https://github.com:FrontISTR/${FRONTISTR}.git
   else
     echo "Already downloaded ${FRONTISTR}"
   fi
