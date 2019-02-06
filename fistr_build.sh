@@ -448,7 +448,7 @@ build_refiner() {
 FRONTISTR="FrontISTR"
 get_fistr() {
   if [ ! -d ${FRONTISTR} ]; then
-    git clone https://github.com:FrontISTR/${FRONTISTR}.git
+    git clone https://github.com/FrontISTR/${FRONTISTR}.git
   else
     echo "Already downloaded ${FRONTISTR}"
   fi
