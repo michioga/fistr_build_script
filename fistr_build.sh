@@ -24,7 +24,7 @@
 BUILD_ROOT=`pwd`
 LIB_ROOT=${BUILD_ROOT}/local
 MAKE_PAR=4
-COMPILER="Intel" # GNU | Intel | IntelOMPI
+COMPILER="GNU" # GNU | Intel | IntelOMPI
 # END modify.
 
 # Misc. settings
@@ -460,6 +460,9 @@ mkdir -p ${LIB_ROOT}/bin ${LIB_ROOT}/lib ${LIB_ROOT}/include
 export PATH="${LIB_ROOT}/bin:$PATH"
 
 set_compiler
+
+read -p "${COMPILER} : ok? (y/N)" yn
+case "$yn" in [yY]*) ;; *) echo "abort."; exit ;; esac
 
 if [ ${COMPILER} = "GNU" ]; then
   get_openblas &
