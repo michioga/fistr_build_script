@@ -55,12 +55,12 @@ set_compiler() {
 }
 
 ########################################
-# OpenBLAS-0.3.5
+# OpenBLAS-0.3.6
 ########################################
 OPENBLAS="OpenBLAS"
 get_openblas() {
   if [ ! -d ${OPENBLAS} ]; then
-    git clone -b v0.3.5 https://github.com/xianyi/${OPENBLAS}.git
+    git clone -b v0.3.6 https://github.com/xianyi/${OPENBLAS}.git
   else
     echo "Already downloaded ${OPENBLAS}"
   fi
@@ -178,9 +178,9 @@ build_scalapack() {
 }
 
 ########################################
-# MUMPS-5.1.2
+# MUMPS-5.2.2
 ########################################
-MUMPS="MUMPS_5.1.2"
+MUMPS="MUMPS_5.2.0"
 get_mumps() {
   if [ ! -f ${MUMPS}.tar.gz ]; then
     curl ${CURL_FLAGS} -L -O http://mumps.enseeiht.fr/${MUMPS}.tar.gz
@@ -402,7 +402,7 @@ build_refiner() {
 FRONTISTR="FrontISTR"
 get_fistr() {
   if [ ! -d ${FRONTISTR} ]; then
-    git clone https://github.com/FrontISTR/${FRONTISTR}.git
+    git clone git@gitlab.com:FrontISTR-Commons/${FRONTISTR}.git
   else
     echo "Already downloaded ${FRONTISTR}"
   fi
