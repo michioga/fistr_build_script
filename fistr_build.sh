@@ -178,9 +178,9 @@ build_scalapack() {
 }
 
 ########################################
-# MUMPS-5.2.2
+# MUMPS-5.2.1
 ########################################
-MUMPS="MUMPS_5.2.0"
+MUMPS="MUMPS_5.2.1"
 get_mumps() {
   if [ ! -f ${MUMPS}.tar.gz ]; then
     curl ${CURL_FLAGS} -L -O http://mumps.enseeiht.fr/${MUMPS}.tar.gz
