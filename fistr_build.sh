@@ -14,6 +14,10 @@
 #  - gcc/g++
 #  - gfortran
 #
+# Optional
+#  - Intel MKL
+#  - Intel MPI
+#
 # Usage
 #  sh fistr_build.sh
 #
@@ -24,7 +28,14 @@
 BUILD_ROOT=`pwd`
 LIB_ROOT=${BUILD_ROOT}/local
 MAKE_PAR=4
-COMPILER="GNU" # GNU | Intel | IntelOMPI
+#
+# GNU        : gcc/g++/gfortran + OpenMPI
+# GNUMKLIMPI : gcc/g++/gfortran + IntelMPI
+# Intel      : icc/icpc/ifort   + IntelMPI
+# IntelOMPI  : icc/icpc/ifort   + IntelMPI
+#
+
+COMPILER="GNUMKLIMPI" # GNU | GNUMKLIMPI | Intel | IntelOMPI
 # END modify.
 
 # Misc. settings
@@ -45,8 +56,14 @@ set_compiler() {
     export OMPI_CC=${CC}; export OMPI_CXX=${CXX}; export OMPI_FC=${FC}
     CFLAGS="-O3 -report"; CXXFLAGS="-O3 -report"; FCFLAGS="-O3 -report"
     OMP="-qopenmp"
-  else # default is GNU compiler
+  elif [ $COMPILER = "GNUMKLIMPI" ]; then # default is GNU compiler
     CC=gcc; CXX=g++; FC=gfortran
+    MPICC=mpigcc; MPICXX=mpigxx; MPIFC=mpifc
+    CFLAGS="-O3 -Wall"; CXXFLAGS="-O3 -Wall"; FCFLAGS="-O3 -Wall"
+    export OMPI_CC=${CC}; export OMPI_CXX=${CXX}; export OMPI_FC=${FC}
+    OMP="-fopenmp"
+  else
+    cc=gcc; CXX=g++; FC=gfortran
     MPICC=mpicc; MPICXX=mpicxx; MPIFC=mpif90
     CFLAGS="-O3 -Wall"; CXXFLAGS="-O3 -Wall"; FCFLAGS="-O3 -Wall"
     export OMPI_CC=${CC}; export OMPI_CXX=${CXX}; export OMPI_FC=${FC}
@@ -206,6 +223,20 @@ build_mumps() {
         -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
         -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
         Makefile.inc
+    elif [ ${COMPILER} -eq "GNUMKLIMPI" ]; then
+      cp Make.inc/Makefile.INTEL.PAR Makefile.inc
+      sed -i \
+        -e "s|^CC      = cc|CC      = ${MPICC}|"  \
+        -e "s|^FC      = f90|FC      = ${MPIFC}|"  \
+        -e "s|^FL      = f90|FL      = ${MPIFC}|" \
+        -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
+        -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
+        -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
+        -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
+        -e "s|^OPTF    = -O|OPTF    = -O -DBLR_MT ${OMP}|" \
+        -e "s|^OPTC    = -O -I\.|OPTC    = -O -I. ${OMP}|" \
+        -e "s|^OPTL    = -O|OPTL    = -O ${OMP}|" \
+        Makefile.inc
     elif [ ${COMPILER} -eq "IntelOMPI" ]; then
       cp Make.inc/Makefile.INTEL.PAR Makefile.inc
       sed -i \
@@ -293,6 +324,36 @@ build_trilinos() {
         -DSCALAPACK_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
         -DBLAS_LIBRARY_NAMES="mkl_intel_lp64;mkl_intel_thread;mkl_core" \
         -DLAPACK_LIBRARY_NAMES="mkl_intel_lp64;mkl_intel_thread;mkl_core" \
+        -DSCALAPACK_LIBRARY_NAMES="mkl_scalapack_lp64;mkl_blacs_intelmpi_lp64" \
+        ..
+    elif [ ${COMPILER} = "GNUMKLIMPI" ]; then
+      cmake \
+        -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
+        -DCMAKE_C_COMPILER=${MPICC} \
+        -DCMAKE_CXX_COMPILER=${MPICXX} \
+        -DCMAKE_Fortran_COMPILER=${MPIFC} \
+        -DTPL_ENABLE_MPI=ON \
+        -DTPL_ENABLE_LAPACK=ON \
+        -DTPL_ENABLE_SCALAPACK=ON \
+        -DTPL_ENABLE_METIS=ON \
+        -DTPL_ENABLE_MUMPS=ON \
+        -DTrilinos_ENABLE_ML=ON \
+        -DTrilinos_ENABLE_Zoltan=ON \
+        -DTrilinos_ENABLE_OpenMP=ON \
+        -DTrilinos_ENABLE_Amesos=ON \
+        -DTrilinos_ENABLE_ALL_OPTIONAL_PACKAGES=OFF \
+        -DTPL_ENABLE_MKL=ON \
+        -DTPL_ENABLE_PARDISO_MKL=ON \
+        -DMKL_INCLUDE_DIRS="${MKLROOT}/include" \
+        -DMKL_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+        -DPARDISO_MKL_INCLUDE_DIRS="${MKLROOT}/include" \
+        -DPARDISO_MKL_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+        -DAmesos_ENABLE_PARDISO_MKL=ON \
+        -DBLAS_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+        -DLAPACK_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+        -DSCALAPACK_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+        -DBLAS_LIBRARY_NAMES="mkl_intel_lp64;mkl_gnu_thread;mkl_core" \
+        -DLAPACK_LIBRARY_NAMES="mkl_intel_lp64;mkl_gnu_thread;mkl_core" \
         -DSCALAPACK_LIBRARY_NAMES="mkl_scalapack_lp64;mkl_blacs_intelmpi_lp64" \
         ..
     elif [ ${COMPILER} = "IntelOMPI" ]; then
@@ -423,6 +484,18 @@ build_fistr() {
         -DSCALAPACK_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_scalapack_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so;${MKLROOT}/lib/intel64/libmkl_blacs_intelmpi_lp64.so;iomp5;pthread;m;dl" \
         -DWITH_MKL=1 \
         ..
+    elif [ ${COMPILER} = "GNUMKLIMPI" ]; then
+      cmake \
+        -DCMAKE_INSTALL_PREFIX=${HOME}/local \
+        -DCMAKE_PREFIX_PATH=${LIB_ROOT} \
+        -DCMAKE_C_COMPILER=${CC} \
+        -DCMAKE_CXX_COMPILER=${CXX} \
+        -DCMAKE_Fortran_COMPILER=${FC} \
+        -DBLAS_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_gnu_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so" \
+        -DLAPACK_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_gnu_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so" \
+        -DSCALAPACK_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_scalapack_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_gnu_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so;${MKLROOT}/lib/intel64/libmkl_blacs_intelmpi_lp64.so;iomp5;pthread;m;dl" \
+        -DWITH_MKL=1 \
+        ..
     elif [ ${COMPILER} = "IntelOMPI" ]; then
       cmake \
         -DCMAKE_INSTALL_PREFIX=${HOME}/local \
@@ -461,7 +534,7 @@ export PATH="${LIB_ROOT}/bin:$PATH"
 
 set_compiler
 
-read -p "${COMPILER} : ok? (y/N)" yn
+read -p "${COMPILER} : ok? (y/N) " yn
 case "$yn" in [yY]*) ;; *) echo "abort."; exit ;; esac
 
 if [ ${COMPILER} = "GNU" ]; then
