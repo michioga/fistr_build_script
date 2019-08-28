@@ -17,6 +17,13 @@
 # Optional
 #  - Intel MKL
 #  - Intel MPI
+#    curl -O https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB
+#    apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB
+#    sudo curl https://apt.repos.intel.com/setup/intelproducts.list -o /etc/apt/sources.list.d/intelproducts.list
+#    sudo apt update
+#    sudo apt install intel-mkl
+#    sudo apt install intel-mpi
+#    source /opt/intel/bin/compilervars.sh
 #
 # Usage
 #  sh fistr_build.sh
