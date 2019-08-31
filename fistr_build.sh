@@ -470,7 +470,7 @@ build_refiner() {
 FRONTISTR="FrontISTR"
 get_fistr() {
   if [ ! -d ${FRONTISTR} ]; then
-    git clone git@gitlab.com:FrontISTR-Commons/${FRONTISTR}.git
+    git clone https://gitlab.com:FrontISTR-Commons/${FRONTISTR}.git
   else
     echo "Already downloaded ${FRONTISTR}"
   fi
@@ -549,7 +549,7 @@ if [ ${COMPILER} = "GNU" ]; then
   get_scalapack &
 fi
 get_metis &
-#get_parmetis &
+get_parmetis &
 get_refiner &
 get_mumps &
 get_trilinos &
@@ -560,7 +560,7 @@ if [ ${COMPILER} = "GNU" ]; then
   build_openblas &
 fi
 build_metis &
-#build_parmetis &
+build_parmetis &
 build_refiner &
 wait
 
