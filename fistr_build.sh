@@ -42,7 +42,7 @@ MAKE_PAR=4
 # IntelOMPI  : icc/icpc/ifort   + IntelMPI
 #
 
-COMPILER="GNUMKLMPI" # GNU | GNUMKLIMPI | Intel | IntelOMPI
+COMPILER="GNUMKLIMPI" # GNU | GNUMKLIMPI | Intel | IntelOMPI
 # END modify.
 
 # Misc. settings
