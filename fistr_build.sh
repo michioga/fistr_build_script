@@ -2,7 +2,7 @@
 ###################################################################
 # Simple automatic build script for FrontISTR
 ###################################################################
-# Copyright (c) 2017-2018 Michio Ogawa
+# Copyright (c) 2017-2019 Michio Ogawa
 # This software is released under the MIT License, see LICENSE.txt
 ###################################################################
 
@@ -42,7 +42,7 @@ MAKE_PAR=4
 # IntelOMPI  : icc/icpc/ifort   + IntelMPI
 #
 
-COMPILER="GNUMKLIMPI" # GNU | GNUMKLIMPI | Intel | IntelOMPI
+COMPILER="GNU" # GNU | GNUMKLIMPI | Intel | IntelOMPI
 # END modify.
 
 # Misc. settings
@@ -84,7 +84,7 @@ set_compiler() {
 OPENBLAS="OpenBLAS"
 get_openblas() {
   if [ ! -d ${OPENBLAS} ]; then
-    git clone -b v0.3.6 https://github.com/xianyi/${OPENBLAS}.git
+    git clone -b v0.3.7 https://github.com/xianyi/${OPENBLAS}.git
   else
     echo "Already downloaded ${OPENBLAS}"
   fi
@@ -288,7 +288,8 @@ build_mumps() {
 TRILINOS="Trilinos"
 get_trilinos() {
   if [ ! -d ${TRILINOS} ]; then
-    git clone -b trilinos-release-12-14-1 \
+    #git clone -b trilinos-release-12-14-1 \
+    git clone \
 	    https://github.com/trilinos/${TRILINOS}.git
   else
     echo "Already downloaded ${TRILINOS}"
@@ -470,7 +471,7 @@ build_refiner() {
 FRONTISTR="FrontISTR"
 get_fistr() {
   if [ ! -d ${FRONTISTR} ]; then
-    git clone https://gitlab.com:FrontISTR-Commons/${FRONTISTR}.git
+    git clone https://gitlab.com/FrontISTR-Commons/${FRONTISTR}.git
   else
     echo "Already downloaded ${FRONTISTR}"
   fi
