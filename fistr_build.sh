@@ -70,7 +70,7 @@ set_compiler() {
     export OMPI_CC=${CC}; export OMPI_CXX=${CXX}; export OMPI_FC=${FC}
     OMP="-fopenmp"
   else
-    cc=gcc; CXX=g++; FC=gfortran
+    CC=gcc; CXX=g++; FC=gfortran
     MPICC=mpicc; MPICXX=mpicxx; MPIFC=mpif90
     CFLAGS="-O3 -Wall"; CXXFLAGS="-O3 -Wall"; FCFLAGS="-O3 -Wall"
     export OMPI_CC=${CC}; export OMPI_CXX=${CXX}; export OMPI_FC=${FC}
@@ -84,7 +84,7 @@ set_compiler() {
 OPENBLAS="OpenBLAS"
 get_openblas() {
   if [ ! -d ${OPENBLAS} ]; then
-    git clone -b v0.3.7 https://github.com/xianyi/${OPENBLAS}.git
+    git clone -b v0.3.6 https://github.com/xianyi/${OPENBLAS}.git
   else
     echo "Already downloaded ${OPENBLAS}"
   fi
