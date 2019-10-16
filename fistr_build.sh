@@ -42,7 +42,7 @@ MAKE_PAR=4
 # IntelOMPI  : icc/icpc/ifort   + IntelMPI
 #
 
-COMPILER="GNU" # GNU | GNUMKLIMPI | Intel | IntelOMPI
+COMPILER="GNUMKLMPI" # GNU | GNUMKLIMPI | Intel | IntelOMPI
 # END modify.
 
 # Misc. settings
@@ -79,12 +79,12 @@ set_compiler() {
 }
 
 ########################################
-# OpenBLAS-0.3.6
+# OpenBLAS-0.3.7
 ########################################
 OPENBLAS="OpenBLAS"
 get_openblas() {
   if [ ! -d ${OPENBLAS} ]; then
-    git clone -b v0.3.6 https://github.com/xianyi/${OPENBLAS}.git
+    git clone -b v0.3.7 https://github.com/xianyi/${OPENBLAS}.git
   else
     echo "Already downloaded ${OPENBLAS}"
   fi
