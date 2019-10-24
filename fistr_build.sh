@@ -42,7 +42,7 @@ MAKE_PAR=4
 # IntelOMPI  : icc/icpc/ifort   + IntelMPI
 #
 
-COMPILER="GNU" # GNU | GNUMKLIMPI | Intel | IntelOMPI
+COMPILER="GNUMKLIMPI" # GNU | GNUMKLIMPI | Intel | IntelOMPI
 # END modify.
 
 # Misc. settings
@@ -432,7 +432,7 @@ build_trilinos() {
 REFINER="REVOCAP_Refiner-1.1.04"
 get_refiner() {
   if [ ! -f ${REFINER}.tar.gz -o -d REVOCAP_Refiner ]; then
-    #curl -L -O http://www.multi.k.u-tokyo.ac.jp/FrontISTR/reservoir_f/link.pl?${REFINER}.tar.gz
+    curl -L -O http://www.frontistr.com/download/link.php?${REFINER}.tar.gz
     git clone -b v1.1.04 https://github.com/FrontISTR/REVOCAP_Refiner
     echo "refiner"
   else
