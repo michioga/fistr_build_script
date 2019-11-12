@@ -222,7 +222,7 @@ build_mumps() {
   if [ -f ${MUMPS}.tar.gz ]; then
     tar xvf ${MUMPS}.tar.gz
     cd ${MUMPS}
-    if [ ${COMPILER} -eq "Intel" ]; then
+    if [ ${COMPILER} = "Intel" ]; then
       cp Make.inc/Makefile.INTEL.PAR Makefile.inc
       sed -i \
         -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
@@ -230,7 +230,7 @@ build_mumps() {
         -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
         -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
         Makefile.inc
-    elif [ ${COMPILER} -eq "GNUMKLIMPI" ]; then
+    elif [ ${COMPILER} = "GNUMKLIMPI" ]; then
       cp Make.inc/Makefile.INTEL.PAR Makefile.inc
       sed -i \
         -e "s|^CC      = cc|CC      = ${MPICC}|"  \
@@ -244,7 +244,7 @@ build_mumps() {
         -e "s|^OPTC    = -O -I\.|OPTC    = -O -I. ${OMP}|" \
         -e "s|^OPTL    = -O|OPTL    = -O ${OMP}|" \
         Makefile.inc
-    elif [ ${COMPILER} -eq "IntelOMPI" ]; then
+    elif [ ${COMPILER} = "IntelOMPI" ]; then
       cp Make.inc/Makefile.INTEL.PAR Makefile.inc
       sed -i \
         -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
