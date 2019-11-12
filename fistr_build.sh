@@ -432,8 +432,9 @@ build_trilinos() {
 REFINER="REVOCAP_Refiner-1.1.04"
 get_refiner() {
   if [ ! -f ${REFINER}.tar.gz -o -d REVOCAP_Refiner ]; then
-    curl -L -O http://www.frontistr.com/download/link.php?${REFINER}.tar.gz
-    git clone -b v1.1.04 https://github.com/FrontISTR/REVOCAP_Refiner
+    curl -L https://www.frontistr.com/download/link.php?${REFINER}.tar.gz -o ${REFINER}.tar.gz
+    tar xvf ${REFINER}.tar.gz
+    #git clone -b v1.1.04 https://github.com/FrontISTR/REVOCAP_Refiner
     echo "refiner"
   else
     echo "Already downloaded ${REFINER}.tar.gz"
