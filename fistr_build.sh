@@ -233,16 +233,16 @@ build_mumps() {
     elif [ ${COMPILER} = "GNUMKLIMPI" ]; then
       cp Make.inc/Makefile.INTEL.PAR Makefile.inc
       sed -i \
-        -e "s|^CC      = cc|CC      = ${MPICC}|"  \
-        -e "s|^FC      = f90|FC      = ${MPIFC}|"  \
-        -e "s|^FL      = f90|FL      = ${MPIFC}|" \
+	-e "s|^CC = mpiicc|CC = ${MPICC}|" \
+        -e "s|^FC = mpiifort|FC = ${MPIFC}|" \
+        -e "s|^FL = mpiifort|FL = ${MPIFC}|" \
         -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
         -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
         -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
         -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
-        -e "s|^OPTF    = -O|OPTF    = -O -DBLR_MT ${OMP}|" \
-        -e "s|^OPTC    = -O -I\.|OPTC    = -O -I. ${OMP}|" \
-        -e "s|^OPTL    = -O|OPTL    = -O ${OMP}|" \
+        -e "s|^OPTF    = -O -nofor_main -DBLR_MT -qopenmp -DGEMMT_AVAILABLE|OPTF    = -O -DBLR_MT ${OMP} -DGEMMT_AVAILABLE|" \
+        -e "s|^OPTL    = -O -nofor_main -qopenmp|OPTL    = -O ${OMP} -Liomp5 -lpthread|" \
+        -e "s|^OPTC    = -O -qopenmp|OPTC    = -O -I. ${OMP}|" \
         Makefile.inc
     elif [ ${COMPILER} = "IntelOMPI" ]; then
       cp Make.inc/Makefile.INTEL.PAR Makefile.inc
