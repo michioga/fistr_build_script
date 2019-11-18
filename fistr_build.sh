@@ -46,7 +46,7 @@ COMPILER="GNUMKLIMPI" # GNU | GNUMKLIMPI | Intel | IntelOMPI
 # END modify.
 
 # Misc. settings
-CURL_FLAGS="-sS --connect-timeout 10 --max-time 120 --retry 2"
+CURL_FLAGS="-sS --connect-timeout 10 --max-time 60 --retry 2"
 
 ########################################
 # Set compiler dependent option
@@ -551,7 +551,7 @@ if [ ${COMPILER} = "GNU" ]; then
   get_scalapack &
 fi
 get_metis &
-#get_parmetis &
+get_parmetis &
 get_refiner &
 get_mumps &
 get_trilinos &
@@ -562,7 +562,7 @@ if [ ${COMPILER} = "GNU" ]; then
   build_openblas &
 fi
 build_metis &
-#build_parmetis &
+build_parmetis &
 build_refiner &
 wait
 
