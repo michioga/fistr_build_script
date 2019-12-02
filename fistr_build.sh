@@ -23,7 +23,8 @@
 #    sudo apt update
 #    sudo apt install intel-mkl
 #    sudo apt install intel-mpi
-#    source /opt/intel/bin/compilervars.sh
+#    source /opt/intel/bin/compilervars.sh intel64
+#    source /opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpivars.sh intel64
 #
 # Usage
 #  sh fistr_build.sh
