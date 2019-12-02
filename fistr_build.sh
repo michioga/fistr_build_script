@@ -35,7 +35,7 @@
 # START modify as needed.
 BUILD_ROOT=`pwd`
 LIB_ROOT=${BUILD_ROOT}/local
-MAKE_PAR=4
+MAKE_PAR=1
 #
 # GNU        : gcc/g++/gfortran + OpenMPI
 # GNUMKLIMPI : gcc/g++/gfortran + IntelMPI
@@ -241,9 +241,10 @@ build_mumps() {
         -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
         -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
         -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
-        -e "s|^OPTF    = -O -nofor_main -DBLR_MT -qopenmp -DGEMMT_AVAILABLE|OPTF    = -O -DBLR_MT ${OMP} -DGEMMT_AVAILABLE|" \
-        -e "s|^OPTL    = -O -nofor_main -qopenmp|OPTL    = -O ${OMP} -Liomp5 -lpthread|" \
-        -e "s|^OPTC    = -O -qopenmp|OPTC    = -O -I. ${OMP}|" \
+        -e "s|^OPTF    = -O -nofor_main -DBLR_MT -qopenmp -DGEMMT_AVAILABLE|OPTF    = -O3 -DBLR_MT ${OMP} -DGEMMT_AVAILABLE|" \
+        -e "s|^OPTL    = -O -nofor_main -qopenmp|OPTL    = -O3 ${OMP}|" \
+        -e "s|^OPTC    = -O -qopenmp|OPTC    = -O3 -I. ${OMP}|" \
+	-e "s|^LIBOTHERS = -lpthread|LIBOTHERS = -liomp5 -lpthread|" \
         Makefile.inc
     elif [ ${COMPILER} = "IntelOMPI" ]; then
       cp Make.inc/Makefile.INTEL.PAR Makefile.inc
