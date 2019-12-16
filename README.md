@@ -19,13 +19,18 @@ Please install following software in advance.
   - gcc/g++
   - gfortran
 
+## Optional
+
+  - Intel MKL
+  - Intel MPI
+
 ## Usage
 
-~~~
+```
  % git clone https://github.com/michioga/fistr_build_script.git
  % cd fistr_build_script
  % sh fistr_build.sh
-~~~
+```
 
 FrontISTR (fistr1, hec2rcap, hecmw_part1, hecmw_vis1, rconv, rmerge) will be installed under `$HOME/local/bin`.
 
@@ -34,11 +39,21 @@ FrontISTR (fistr1, hec2rcap, hecmw_part1, hecmw_vis1, rconv, rmerge) will be ins
 If you like to increase make speed, edit `MAKE_PAR` variable in script.
 Default value is `4`.
 
-~~~
+```
 # START modify as needed.
 BUILD_ROOT=`pwd`
 LIB_ROOT=${BUILD_ROOT}/local
 MAKE_PAR=4
-COMPILER="GNU" # GNU | Intel | IntelOMPI
+COMPILER="GNU" # GNU  | GNUMKLIMPI | Intel | IntelOMPI
 # END modify.
-~~~
+```
+
+## Current supported platform
+
+| name       | compiler         | MPI library |
+|------------|------------------|-------------|
+| GNU        | gcc/g++/gfortran | OpenMPI     |
+| GNUMKLIMPI | gcc/g++/gfortran | Intel MPI   |
+| Intel      | icc/icpc/ifort   | Intel MPI   |
+| IntelOMPI  | icc/icpc/ifort   | OpenMPI     |
+

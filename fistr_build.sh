@@ -40,7 +40,7 @@ MAKE_PAR=1
 # GNU        : gcc/g++/gfortran + OpenMPI
 # GNUMKLIMPI : gcc/g++/gfortran + IntelMPI
 # Intel      : icc/icpc/ifort   + IntelMPI
-# IntelOMPI  : icc/icpc/ifort   + IntelMPI
+# IntelOMPI  : icc/icpc/ifort   + OpenMPI
 #
 
 COMPILER="GNUMKLIMPI" # GNU | GNUMKLIMPI | Intel | IntelOMPI
