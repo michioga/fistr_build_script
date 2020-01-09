@@ -43,7 +43,7 @@ MAKE_PAR=1
 # IntelOMPI  : icc/icpc/ifort   + OpenMPI
 #
 
-COMPILER="GNUMKLIMPI" # GNU | GNUMKLIMPI | Intel | IntelOMPI
+COMPILER="GNU" # GNU | GNUMKLIMPI | Intel | IntelOMPI
 # END modify.
 
 # Misc. settings
@@ -166,9 +166,9 @@ build_parmetis() {
 }
 
 ########################################
-# scalapack-2.0.2
+# scalapack-2.1.0
 ########################################
-SCALAPACK="scalapack-2.0.2"
+SCALAPACK="scalapack-2.1.0"
 get_scalapack() {
   if [ ! -f ${SCALAPACK}.tgz ]; then
     curl ${CURL_FLAGS} -L -O http://www.netlib.org/scalapack/${SCALAPACK}.tgz
@@ -553,7 +553,7 @@ if [ ${COMPILER} = "GNU" ]; then
   get_scalapack &
 fi
 get_metis &
-get_parmetis &
+#get_parmetis &
 get_refiner &
 get_mumps &
 get_trilinos &
@@ -564,7 +564,7 @@ if [ ${COMPILER} = "GNU" ]; then
   build_openblas &
 fi
 build_metis &
-build_parmetis &
+#build_parmetis &
 build_refiner &
 wait
 
