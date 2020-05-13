@@ -80,12 +80,12 @@ set_compiler() {
 }
 
 ########################################
-# OpenBLAS-0.3.7
+# OpenBLAS-0.3.9
 ########################################
 OPENBLAS="OpenBLAS"
 get_openblas() {
   if [ ! -d ${OPENBLAS} ]; then
-    git clone -b v0.3.7 https://github.com/xianyi/${OPENBLAS}.git
+    git clone -b v0.3.9 https://github.com/xianyi/${OPENBLAS}.git
   else
     echo "Already downloaded ${OPENBLAS}"
   fi
@@ -203,9 +203,9 @@ build_scalapack() {
 }
 
 ########################################
-# MUMPS-5.2.1
+# MUMPS-5.3.1
 ########################################
-MUMPS="MUMPS_5.2.1"
+MUMPS="MUMPS_5.3.1"
 get_mumps() {
   if [ ! -f ${MUMPS}.tar.gz ]; then
     curl ${CURL_FLAGS} -L -O http://mumps.enseeiht.fr/${MUMPS}.tar.gz
@@ -285,13 +285,12 @@ build_mumps() {
 }
 
 ########################################
-# Trilinos 12.14.1
+# Trilinos 12.18.1
 ########################################
 TRILINOS="Trilinos"
 get_trilinos() {
   if [ ! -d ${TRILINOS} ]; then
-    #git clone -b trilinos-release-12-14-1 \
-    git clone \
+    git clone -b trilinos-release-12-18-1 \
 	    https://github.com/trilinos/${TRILINOS}.git
   else
     echo "Already downloaded ${TRILINOS}"
