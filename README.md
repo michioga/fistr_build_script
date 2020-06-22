@@ -50,10 +50,10 @@ COMPILER="GNU" # GNU  | GNUMKLIMPI | Intel | IntelOMPI
 
 ## Current supported platform
 
-| name       | compiler         | MPI library |
-|------------|------------------|-------------|
-| GNU        | gcc/g++/gfortran | OpenMPI     |
-| GNUMKLIMPI | gcc/g++/gfortran | Intel MPI   |
-| Intel      | icc/icpc/ifort   | Intel MPI   |
-| IntelOMPI  | icc/icpc/ifort   | OpenMPI     |
+| name       | compiler         | MPI library | LaPACK library |
+|------------|------------------|-------------|----------------|
+| GNU        | gcc/g++/gfortran | OpenMPI     | OpenBLAS       |
+| GNUMKLIMPI | gcc/g++/gfortran | Intel MPI   | Intel MKL      |
+| Intel      | icc/icpc/ifort   | Intel MPI   | Intel MKL      |
+| IntelOMPI  | icc/icpc/ifort   | OpenMPI     | Intel MKL      |
 
