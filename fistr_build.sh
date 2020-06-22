@@ -2,7 +2,7 @@
 ###################################################################
 # Simple automatic build script for FrontISTR
 ###################################################################
-# Copyright (c) 2017-2019 Michio Ogawa
+# Copyright (c) 2017-2020 Michio Ogawa
 # This software is released under the MIT License, see LICENSE.txt
 ###################################################################
 
@@ -203,9 +203,9 @@ build_scalapack() {
 }
 
 ########################################
-# MUMPS-5.3.1
+# MUMPS-5.3.3
 ########################################
-MUMPS="MUMPS_5.3.1"
+MUMPS="MUMPS_5.3.3"
 get_mumps() {
   if [ ! -f ${MUMPS}.tar.gz ]; then
     curl ${CURL_FLAGS} -L -O http://mumps.enseeiht.fr/${MUMPS}.tar.gz
@@ -563,7 +563,7 @@ if [ ${COMPILER} = "GNU" ]; then
   build_openblas &
 fi
 build_metis &
-#build_parmetis &
+build_parmetis &
 build_refiner &
 wait
 
