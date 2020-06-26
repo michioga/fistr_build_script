@@ -35,7 +35,7 @@
 # START modify as needed.
 BUILD_ROOT=`pwd`
 LIB_ROOT=${BUILD_ROOT}/local
-MAKE_PAR=1
+MAKE_PAR=4
 #
 # GNU        : gcc/g++/gfortran + OpenMPI
 # GNUMKLIMPI : gcc/g++/gfortran + IntelMPI
