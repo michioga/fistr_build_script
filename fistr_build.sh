@@ -80,12 +80,12 @@ set_compiler() {
 }
 
 ########################################
-# OpenBLAS-0.3.9
+# OpenBLAS-0.3.10
 ########################################
 OPENBLAS="OpenBLAS"
 get_openblas() {
   if [ ! -d ${OPENBLAS} ]; then
-    git clone -b v0.3.9 https://github.com/xianyi/${OPENBLAS}.git
+    git clone -b v0.3.10 https://github.com/xianyi/${OPENBLAS}.git
   else
     echo "Already downloaded ${OPENBLAS}"
   fi
