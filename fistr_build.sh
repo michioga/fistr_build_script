@@ -80,12 +80,12 @@ set_compiler() {
 }
 
 ########################################
-# OpenBLAS-0.3.10
+# OpenBLAS-0.3.11
 ########################################
 OPENBLAS="OpenBLAS"
 get_openblas() {
   if [ ! -d ${OPENBLAS} ]; then
-    git clone -b v0.3.10 https://github.com/xianyi/${OPENBLAS}.git
+    git clone -b v0.3.11 https://github.com/xianyi/${OPENBLAS}.git
   else
     echo "Already downloaded ${OPENBLAS}"
   fi
@@ -203,9 +203,9 @@ build_scalapack() {
 }
 
 ########################################
-# MUMPS-5.3.3
+# MUMPS-5.3.4
 ########################################
-MUMPS="MUMPS_5.3.3"
+MUMPS="MUMPS_5.3.4"
 get_mumps() {
   if [ ! -f ${MUMPS}.tar.gz ]; then
     curl ${CURL_FLAGS} -L -O http://mumps.enseeiht.fr/${MUMPS}.tar.gz
@@ -552,7 +552,7 @@ if [ ${COMPILER} = "GNU" ]; then
   get_scalapack &
 fi
 get_metis &
-#get_parmetis &
+get_parmetis &
 get_refiner &
 get_mumps &
 get_trilinos &
