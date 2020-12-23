@@ -80,14 +80,14 @@ set_compiler() {
 }
 
 ########################################
-# OpenBLAS-0.3.12
+# OpenBLAS-0.3.13
 ########################################
 OPENBLAS="OpenBLAS"
 get_openblas() {
   if [ ! -d ${OPENBLAS} ]; then
     git clone https://github.com/xianyi/${OPENBLAS}.git
     cd ${OPENBLAS}
-    git checkout v0.3.12
+    git checkout v0.3.13
   else
     echo "Already downloaded ${OPENBLAS}"
   fi
@@ -287,15 +287,14 @@ build_mumps() {
 }
 
 ########################################
-# Trilinos 12.18.1
+# Trilinos 13.0.1
 ########################################
 TRILINOS="Trilinos"
 get_trilinos() {
   if [ ! -d ${TRILINOS} ]; then
-    git clone -b trilinos-release-12-18-1 \
-	    https://github.com/trilinos/${TRILINOS}.git
+    git clone https://github.com/trilinos/${TRILINOS}.git
     cd ${TRILINOS}
-    git checkout -b trilinos-release-12-18-1
+    git checkout -b trilinos-release-13-0-1
   else
     echo "Already downloaded ${TRILINOS}"
   fi
