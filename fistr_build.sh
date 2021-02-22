@@ -40,7 +40,7 @@ MAKE_PAR=4
 # GNU        : gcc/g++/gfortran + OpenMPI
 # GNUMKLIMPI : gcc/g++/gfortran + IntelMPI
 # Intel      : icc/icpc/ifort   + IntelMPI
-# OneAPI     : icc/icpc/ifort   + IntelMPI
+# OneAPI     : icc/icpc/ifort   + IntelMPI Need latest cmake (>2.19.2)
 # IntelOMPI  : icc/icpc/ifort   + OpenMPI
 #
 
@@ -62,7 +62,7 @@ set_compiler() {
   elif [ $COMPILER = "OneAPI" ]; then
     CC=icc; CXX=icpc; FC=ifort
     MPICC=mpiicc; MPICXX=mpiicpc; MPIFC=mpiifort
-    CFLAGS="-O3 -warn all"; CXXFLAGS="-O3 -warn all"; FCFLAGS="-O3 -warn all"
+    CFLAGS="-O3 -parallel -xHost -warn all"; CXXFLAGS="-O3 -parallel -xHost -warn all"; FCFLAGS="-O3 -parallel -xHost -warn all"
     OMP="-qopenmp"
   elif [ $COMPILER = "IntelOMPI" ]; then
     CC=icc; CXX=icpc; FC=ifort
@@ -243,6 +243,9 @@ build_mumps() {
     elif [ ${COMPILER} = "OneAPI" ]; then
       cp Make.inc/Makefile.INTEL.PAR Makefile.inc
       sed -i \
+	-e "s|^CC = mpiicc|CC = ${MPICC} -parallel -xHost|" \
+        -e "s|^FC = mpiifort|FC = ${MPIFC} -parallel -xHost|" \
+        -e "s|^FL = mpiifort|FL = ${MPIFC} -parallel -xHost|" \
         -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
         -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
         -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
