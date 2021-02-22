@@ -40,10 +40,11 @@ MAKE_PAR=4
 # GNU        : gcc/g++/gfortran + OpenMPI
 # GNUMKLIMPI : gcc/g++/gfortran + IntelMPI
 # Intel      : icc/icpc/ifort   + IntelMPI
+# OneAPI     : icc/icpc/ifort   + IntelMPI
 # IntelOMPI  : icc/icpc/ifort   + OpenMPI
 #
 
-COMPILER="GNU" # GNU | GNUMKLIMPI | Intel | IntelOMPI
+COMPILER="OneAPI" # GNU | GNUMKLIMPI | Intel | OneAPI | IntelOMPI
 # END modify.
 
 # Misc. settings
@@ -57,6 +58,11 @@ set_compiler() {
     CC=icc; CXX=icpc; FC=ifort
     MPICC=mpiicc; MPICXX=mpiicpc; MPIFC=mpiifort
     CFLAGS="-O3 -report"; CXXFLAGS="-O3 -report"; FCFLAGS="-O3 -report"
+    OMP="-qopenmp"
+  elif [ $COMPILER = "OneAPI" ]; then
+    CC=icc; CXX=icpc; FC=ifort
+    MPICC=mpiicc; MPICXX=mpiicpc; MPIFC=mpiifort
+    CFLAGS="-O3 -warn all"; CXXFLAGS="-O3 -warn all"; FCFLAGS="-O3 -warn all"
     OMP="-qopenmp"
   elif [ $COMPILER = "IntelOMPI" ]; then
     CC=icc; CXX=icpc; FC=ifort
@@ -232,6 +238,18 @@ build_mumps() {
         -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
         -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
         -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
+        -e "s|^OPTC    = -O -qopenmp|OPTC    = -O3 -I. ${OMP}|" \
+        Makefile.inc
+    elif [ ${COMPILER} = "OneAPI" ]; then
+      cp Make.inc/Makefile.INTEL.PAR Makefile.inc
+      sed -i \
+        -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
+        -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
+        -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
+        -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
+        -e "s|^OPTF    = -O -nofor_main -DBLR_MT -qopenmp -DGEMMT_AVAILABLE|OPTF    = -O3 -DBLR_MT ${OMP} -DGEMMT_AVAILABLE|" \
+        -e "s|^OPTL    = -O -nofor_main -qopenmp|OPTL    = -O3 -nofor-main ${OMP}|" \
+	-e "s|^LIBOTHERS = -lpthread|LIBOTHERS = -liomp5 -lpthread|" \
         Makefile.inc
     elif [ ${COMPILER} = "GNUMKLIMPI" ]; then
       cp Make.inc/Makefile.INTEL.PAR Makefile.inc
@@ -309,6 +327,36 @@ build_trilinos() {
     mkdir build
     cd build
     if [ ${COMPILER} = "Intel" ]; then
+      cmake \
+        -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
+        -DCMAKE_C_COMPILER=${MPICC} \
+        -DCMAKE_CXX_COMPILER=${MPICXX} \
+        -DCMAKE_Fortran_COMPILER=${MPIFC} \
+        -DTPL_ENABLE_MPI=ON \
+        -DTPL_ENABLE_LAPACK=ON \
+        -DTPL_ENABLE_SCALAPACK=ON \
+        -DTPL_ENABLE_METIS=ON \
+        -DTPL_ENABLE_MUMPS=ON \
+        -DTrilinos_ENABLE_ML=ON \
+        -DTrilinos_ENABLE_Zoltan=ON \
+        -DTrilinos_ENABLE_OpenMP=ON \
+        -DTrilinos_ENABLE_Amesos=ON \
+        -DTrilinos_ENABLE_ALL_OPTIONAL_PACKAGES=OFF \
+        -DTPL_ENABLE_MKL=ON \
+        -DTPL_ENABLE_PARDISO_MKL=ON \
+        -DMKL_INCLUDE_DIRS="${MKLROOT}/include" \
+        -DMKL_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+        -DPARDISO_MKL_INCLUDE_DIRS="${MKLROOT}/include" \
+        -DPARDISO_MKL_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+        -DAmesos_ENABLE_PARDISO_MKL=ON \
+        -DBLAS_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+        -DLAPACK_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+        -DSCALAPACK_LIBRARY_DIRS="${MKLROOT}/lib/intel64" \
+        -DBLAS_LIBRARY_NAMES="mkl_intel_lp64;mkl_intel_thread;mkl_core" \
+        -DLAPACK_LIBRARY_NAMES="mkl_intel_lp64;mkl_intel_thread;mkl_core" \
+        -DSCALAPACK_LIBRARY_NAMES="mkl_scalapack_lp64;mkl_blacs_intelmpi_lp64" \
+        ..
+    elif [ ${COMPILER} = "OneAPI" ]; then
       cmake \
         -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
         -DCMAKE_C_COMPILER=${MPICC} \
@@ -486,6 +534,18 @@ build_fistr() {
     cd ${FRONTISTR}
     mkdir build; cd build
     if [ ${COMPILER} = "Intel" ]; then
+      cmake \
+        -DCMAKE_INSTALL_PREFIX=${HOME}/local \
+        -DCMAKE_PREFIX_PATH=${LIB_ROOT} \
+        -DCMAKE_C_COMPILER=${CC} \
+        -DCMAKE_CXX_COMPILER=${CXX} \
+        -DCMAKE_Fortran_COMPILER=${FC} \
+        -DBLAS_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so" \
+        -DLAPACK_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so" \
+        -DSCALAPACK_LIBRARIES="${MKLROOT}/lib/intel64/libmkl_scalapack_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_lp64.so;${MKLROOT}/lib/intel64/libmkl_intel_thread.so;${MKLROOT}/lib/intel64/libmkl_core.so;${MKLROOT}/lib/intel64/libmkl_blacs_intelmpi_lp64.so;iomp5;pthread;m;dl" \
+        -DWITH_MKL=1 \
+        ..
+    elif [ ${COMPILER} = "OneAPI" ]; then
       cmake \
         -DCMAKE_INSTALL_PREFIX=${HOME}/local \
         -DCMAKE_PREFIX_PATH=${LIB_ROOT} \
