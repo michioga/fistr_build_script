@@ -44,7 +44,7 @@ MAKE_PAR=4
 # IntelOMPI  : icc/icpc/ifort   + OpenMPI
 #
 
-COMPILER="GNU" # GNU | GNUMKLIMPI | Intel | OneAPI | IntelOMPI
+COMPILER="OneAPI" # GNU | GNUMKLIMPI | Intel | OneAPI | IntelOMPI
 # END modify.
 
 # Misc. settings
@@ -62,7 +62,7 @@ set_compiler() {
   elif [ $COMPILER = "OneAPI" ]; then
     CC=icc; CXX=icpc; FC=ifort
     MPICC=mpiicc; MPICXX=mpiicpc; MPIFC=mpiifort
-    CFLAGS="-O3 -parallel -xHost -warn all"; CXXFLAGS="-O3 -parallel -xHost -warn all"; FCFLAGS="-O3 -parallel -xHost -warn all"
+    CFLAGS="-O3 -parallel -xHost -mkl -warn all"; CXXFLAGS="-O3 -parallel -xHost -mkl -warn all"; FCFLAGS="-O3 -parallel -mkl -xHost -warn all"
     OMP="-qopenmp"
   elif [ $COMPILER = "IntelOMPI" ]; then
     CC=icc; CXX=icpc; FC=ifort
