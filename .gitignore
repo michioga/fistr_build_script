@@ -27,6 +27,7 @@ MUMPS_5.3.4.tar.gz
 MUMPS_5.3.4/
 MUMPS_5.3.5.tar.gz
 MUMPS_5.3.5/
+mumps/
 tutorial/
 *.swp
 Thumbs.db

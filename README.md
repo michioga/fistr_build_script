@@ -23,6 +23,7 @@ Please install following software in advance.
 
   - Intel MKL
   - Intel MPI
+  - Intel oneAPI (needs latest cmake)
 
 ## Usage
 
