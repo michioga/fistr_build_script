@@ -62,7 +62,7 @@ set_compiler() {
   elif [ $COMPILER = "OneAPI" ]; then
     CC=icc; CXX=icpc; FC=ifort
     MPICC=mpiicc; MPICXX=mpiicpc; MPIFC=mpiifort
-    CFLAGS="-O3 -parallel -xHost -warn all"; CXXFLAGS="-O3 -parallel -xHost -warn all"; FCFLAGS="-O3 -parallel -xHost -warn all"
+    CFLAGS="-O3 -xHost -mkl -warn all"; CXXFLAGS="-O3 -xHost -mkl -warn all"; FCFLAGS="-O3 -mkl -xHost -warn all"
     OMP="-qopenmp"
   elif [ $COMPILER = "IntelOMPI" ]; then
     CC=icc; CXX=icpc; FC=ifort
@@ -213,94 +213,37 @@ build_scalapack() {
 ########################################
 # MUMPS-5.3.5
 ########################################
-MUMPS="MUMPS_5.3.5"
+MUMPS="mumps"
 get_mumps() {
-  if [ ! -f ${MUMPS}.tar.gz ]; then
-    curl ${CURL_FLAGS} -L -O http://mumps.enseeiht.fr/${MUMPS}.tar.gz
+  if [ ! -d ${MUMPS} ]; then
+    git clone https://github.com/scivision/${MUMPS}.git
+    cd ${MUMPS}
+    git checkout -b 5.3.5
   else
-    echo "Already downloaded ${MUMPS}.tar.gz"
+    echo "Already downloaded ${MUMPS}"
   fi
 }
 build_mumps() {
   if [ -f ${LIB_ROOT}/lib/libpord.a \
-	  -a -f ${LIB_ROOT}/lib/libdmumps.a \
-	  -a -f ${LIB_ROOT}/lib/libmumps_common.a ]; then
+         -a -f ${LIB_ROOT}/lib/libdmumps.a \
+         -a -f ${LIB_ROOT}/lib/libmumps_common.a ]; then
     echo "skip building ${MUMPS}"
     return
   fi
-  if [ -f ${MUMPS}.tar.gz ]; then
-    tar xvf ${MUMPS}.tar.gz
+  if [ -d ${MUMPS} ]; then
     cd ${MUMPS}
-    if [ ${COMPILER} = "Intel" ]; then
-      cp Make.inc/Makefile.INTEL.PAR Makefile.inc
-      sed -i \
-        -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
-        -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
-        -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
-        -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
-        -e "s|^OPTC    = -O -qopenmp|OPTC    = -O3 -I. ${OMP}|" \
-        Makefile.inc
-    elif [ ${COMPILER} = "OneAPI" ]; then
-      cp Make.inc/Makefile.INTEL.PAR Makefile.inc
-      sed -i \
-	-e "s|^CC = mpiicc|CC = ${MPICC} -parallel -xHost|" \
-        -e "s|^FC = mpiifort|FC = ${MPIFC} -parallel -xHost|" \
-        -e "s|^FL = mpiifort|FL = ${MPIFC} -parallel -xHost|" \
-        -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
-        -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
-        -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
-        -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
-        -e "s|^OPTF    = -O -nofor_main -DBLR_MT -qopenmp -DGEMMT_AVAILABLE|OPTF    = -O3 -DBLR_MT ${OMP} -DGEMMT_AVAILABLE|" \
-        -e "s|^OPTL    = -O -nofor_main -qopenmp|OPTL    = -O3 -nofor-main ${OMP}|" \
-	-e "s|^LIBOTHERS = -lpthread|LIBOTHERS = -liomp5 -lpthread|" \
-        Makefile.inc
-    elif [ ${COMPILER} = "GNUMKLIMPI" ]; then
-      cp Make.inc/Makefile.INTEL.PAR Makefile.inc
-      sed -i \
-	-e "s|^CC = mpiicc|CC = ${MPICC}|" \
-        -e "s|^FC = mpiifort|FC = ${MPIFC}|" \
-        -e "s|^FL = mpiifort|FL = ${MPIFC}|" \
-        -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
-        -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
-        -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
-        -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
-        -e "s|^OPTF    = -O -nofor_main -DBLR_MT -qopenmp -DGEMMT_AVAILABLE|OPTF    = -O3 -DBLR_MT ${OMP} -DGEMMT_AVAILABLE|" \
-        -e "s|^OPTL    = -O -nofor_main -qopenmp|OPTL    = -O3 ${OMP}|" \
-        -e "s|^OPTC    = -O -qopenmp|OPTC    = -O3 -I. ${OMP}|" \
-	-e "s|^LIBOTHERS = -lpthread|LIBOTHERS = -liomp5 -lpthread|" \
-        Makefile.inc
-    elif [ ${COMPILER} = "IntelOMPI" ]; then
-      cp Make.inc/Makefile.INTEL.PAR Makefile.inc
-      sed -i \
-        -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
-        -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
-        -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
-        -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
-        -e "s|^CC = mpiicc|CC = ${MPICC}|" \
-        -e "s|^FC = mpiifort|FC = ${MPIFC}|" \
-        -e "s|^FL = mpiifort|FL = ${MPIFC}|"
-        Makefile.inc
-    else # Default
-      cp Make.inc/Makefile.inc.generic Makefile.inc
-      sed -i \
-        -e "s|^#LMETISDIR = .*$|LMETISDIR = ${LIB_ROOT}|" \
-        -e "s|^#IMETIS    = .*$|IMETIS = -I\$(LMETISDIR)/include|" \
-        -e "s|^#LMETIS    = -L\$(LMETISDIR) -lmetis$|LMETIS = -L\$(LMETISDIR)/lib -lmetis|" \
-        -e "s|^ORDERINGSF  = -Dpord$|ORDERINGSF = -Dpord -Dmetis|" \
-        -e "s|^CC      = cc|CC      = ${MPICC}|"  \
-        -e "s|^FC      = f90|FC      = ${MPIFC}|"  \
-        -e "s|^FL      = f90|FL      = ${MPIFC}|" \
-        -e "s|^LAPACK = -llapack|LAPACK = -L${LIB_ROOT}/lib -lopenblas|" \
-        -e "s|^SCALAP  = -lscalapack -lblacs|SCALAP  = -L${LIB_ROOT}/lib -lscalapack|" \
-        -e "s|^LIBBLAS = -lblas|LIBBLAS = -L${LIB_ROOT}/lib -lopenblas|" \
-        -e "s|^OPTF    = -O|OPTF    = -O -DBLR_MT ${OMP}|" \
-        -e "s|^OPTC    = -O -I\.|OPTC    = -O -I. ${OMP}|" \
-        -e "s|^OPTL    = -O|OPTL    = -O ${OMP}|" \
-        Makefile.inc
-    fi
-    make
-    cp include/*.h ${LIB_ROOT}/include
-    cp lib/*.a ${LIB_ROOT}/lib
+    mkdir build
+    cd build
+    cmake \
+      -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
+      -DCMAKE_C_COMPILER=${MPICC} \
+      -DCMAKE_CXX_COMPILER=${MPICXX} \
+      -DCMAKE_Fortran_COMPILER=${MPIFC} \
+      -Dopenmp=ON \
+      -Dmetis=ON \
+	..
+    make -j${MAKE_PAR}
+    make install
     cd ${BUILD_ROOT}
   else
     echo "No ${MUMPS} archive"
