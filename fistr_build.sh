@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 ###################################################################
 # Simple automatic build script for FrontISTR
 ###################################################################
@@ -48,7 +48,7 @@ COMPILER="OneAPI" # GNU | GNUMKLIMPI | Intel | OneAPI | IntelOMPI
 # END modify.
 
 # Misc. settings
-CURL_FLAGS="-sS --connect-timeout 10 --max-time 60 --retry 2"
+CURL_FLAGS="--progress-bar -sS --connect-timeout 10 --max-time 60 --retry 2"
 
 ########################################
 # Set compiler dependent option
@@ -91,7 +91,8 @@ set_compiler() {
 CMAKE="cmake-3.19.7"
 get_cmake() {
 	if [ ! -d ${CMAKE} ]; then
-    curl ${CURL_FLAGS}-Linux-x86_64/ -L -O \
+		echo "Getting " ${CMAKE}
+    curl ${CURL_FLAGS} -L -O \
 			https://cmake.org/files/LatestRelease/${CMAKE}-Linux-x86_64.tar.gz
 	else
 		echo "Already download ${CMAKE}"
@@ -100,7 +101,7 @@ get_cmake() {
 extract_cmake() {
 	echo "extract latest binary cmake"
 	tar xvf ${CMAKE}-Linux-x86_64.tar.gz
-	CMAKE_PATH=`pwd`/${CMAKE}-Linux-x86_64/bin
+	PATH=`pwd`/${CMAKE}-Linux-x86_64/bin:$PATH
 }
 
 ########################################
@@ -212,7 +213,7 @@ build_scalapack() {
     cd ${SCALAPACK}
     mkdir build
     cd build
-    ${CMAKE_PATH}/cmake \
+    cmake \
       -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
       -DCMAKE_EXE_LINKER_FLAGS=${OMP} \
       -DCMAKE_C_COMPILER=${CC} \
@@ -252,7 +253,7 @@ build_mumps() {
     cd ${MUMPS}
     mkdir build
     cd build
-    ${CMAKE_PATH}/cmake \
+    cmake \
       -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
       -DCMAKE_C_COMPILER=${MPICC} \
       -DCMAKE_CXX_COMPILER=${MPICXX} \
@@ -291,7 +292,7 @@ build_trilinos() {
     mkdir build
     cd build
     if [ ${COMPILER} = "Intel" ]; then
-      ${CMAKE_PATH}/cmake \
+      cmake \
         -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
         -DCMAKE_C_COMPILER=${MPICC} \
         -DCMAKE_CXX_COMPILER=${MPICXX} \
@@ -321,7 +322,7 @@ build_trilinos() {
         -DSCALAPACK_LIBRARY_NAMES="mkl_scalapack_lp64;mkl_blacs_intelmpi_lp64" \
         ..
     elif [ ${COMPILER} = "OneAPI" ]; then
-      ${CMAKE_PATH}/cmake \
+      cmake \
         -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
         -DCMAKE_C_COMPILER=${MPICC} \
         -DCMAKE_CXX_COMPILER=${MPICXX} \
@@ -351,7 +352,7 @@ build_trilinos() {
         -DSCALAPACK_LIBRARY_NAMES="mkl_scalapack_lp64;mkl_blacs_intelmpi_lp64" \
         ..
     elif [ ${COMPILER} = "GNUMKLIMPI" ]; then
-      ${CMAKE_PATH}/cmake \
+      cmake \
         -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
         -DCMAKE_C_COMPILER=${MPICC} \
         -DCMAKE_CXX_COMPILER=${MPICXX} \
@@ -381,7 +382,7 @@ build_trilinos() {
         -DSCALAPACK_LIBRARY_NAMES="mkl_scalapack_lp64;mkl_blacs_intelmpi_lp64" \
         ..
     elif [ ${COMPILER} = "IntelOMPI" ]; then
-      ${CMAKE_PATH}/cmake \
+      cmake \
         -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
         -DCMAKE_C_COMPILER=${MPICC} \
         -DCMAKE_CXX_COMPILER=${MPICXX} \
@@ -411,7 +412,7 @@ build_trilinos() {
         -DSCALAPACK_LIBRARY_NAMES="mkl_scalapack_lp64;mkl_blacs_openmpi_lp64" \
         ..
     else # Default
-			${CMAKE_PATH}/cmake \
+			cmake \
         -DCMAKE_INSTALL_PREFIX=${LIB_ROOT} \
         -DCMAKE_C_COMPILER=${MPICC} \
         -DCMAKE_CXX_COMPILER=${MPICXX} \
@@ -498,7 +499,7 @@ build_fistr() {
     cd ${FRONTISTR}
     mkdir build; cd build
     if [ ${COMPILER} = "Intel" ]; then
-      ${CMAKE_PATH}/cmake \
+      cmake \
         -DCMAKE_INSTALL_PREFIX=${HOME}/local \
         -DCMAKE_PREFIX_PATH=${LIB_ROOT} \
         -DCMAKE_C_COMPILER=${CC} \
@@ -510,7 +511,7 @@ build_fistr() {
         -DWITH_MKL=1 \
         ..
     elif [ ${COMPILER} = "OneAPI" ]; then
-      ${CMAKE_PATH}/cmake \
+      cmake \
         -DCMAKE_INSTALL_PREFIX=${HOME}/local \
         -DCMAKE_PREFIX_PATH=${LIB_ROOT} \
         -DCMAKE_C_COMPILER=${CC} \
@@ -522,7 +523,7 @@ build_fistr() {
         -DWITH_MKL=1 \
         ..
     elif [ ${COMPILER} = "GNUMKLIMPI" ]; then
-      ${CMAKE_PATH}/cmake \
+      cmake \
         -DCMAKE_INSTALL_PREFIX=${HOME}/local \
         -DCMAKE_PREFIX_PATH=${LIB_ROOT} \
         -DCMAKE_C_COMPILER=${CC} \
@@ -534,7 +535,7 @@ build_fistr() {
         -DWITH_MKL=1 \
         ..
     elif [ ${COMPILER} = "IntelOMPI" ]; then
-      ${CMAKE_PATH}/cmake \
+      cmake \
         -DCMAKE_INSTALL_PREFIX=${HOME}/local \
         -DCMAKE_PREFIX_PATH=${LIB_ROOT} \
         -DCMAKE_C_COMPILER=${CC} \
@@ -546,7 +547,7 @@ build_fistr() {
         -DWITH_MKL=1 \
         ..
     else
-      ${CMAKE_PATH}/cmake \
+      cmake \
         -DCMAKE_INSTALL_PREFIX=${HOME}/local \
         -DCMAKE_PREFIX_PATH=${LIB_ROOT} \
         -DCMAKE_C_COMPILER=${CC} \
