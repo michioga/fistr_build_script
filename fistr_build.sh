@@ -48,7 +48,7 @@ COMPILER="OneAPI" # GNU | GNUMKLIMPI | Intel | OneAPI | IntelOMPI
 # END modify.
 
 # Misc. settings
-CURL_FLAGS="--progress-bar -sS --connect-timeout 10 --max-time 60 --retry 2"
+CURL_FLAGS="-# -sS --connect-timeout 10 --max-time 60 --retry 2"
 
 ########################################
 # Set compiler dependent option
