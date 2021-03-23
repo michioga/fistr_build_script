@@ -48,7 +48,7 @@ COMPILER="OneAPI" # GNU | GNUMKLIMPI | Intel | OneAPI | IntelOMPI
 # END modify.
 
 # Misc. settings
-CURL_FLAGS="-# -sS --connect-timeout 10 --max-time 60 --retry 2"
+CURL_FLAGS="-# -S --connect-timeout 10 --max-time 60 --retry 2"
 
 ########################################
 # Set compiler dependent option
@@ -88,20 +88,24 @@ set_compiler() {
 ########################################
 # cmake-3.19.7
 ########################################
-CMAKE="cmake-3.19.7"
+CMAKE="cmake-3.19.7-Linux-x86_64"
 get_cmake() {
 	if [ ! -d ${CMAKE} ]; then
-		echo "Getting " ${CMAKE}
+		echo ">>>>> Getting " ${CMAKE} " <<<<<"
     curl ${CURL_FLAGS} -L -O \
-			https://cmake.org/files/LatestRelease/${CMAKE}-Linux-x86_64.tar.gz
+			https://cmake.org/files/LatestRelease/${CMAKE}.tar.gz
 	else
 		echo "Already download ${CMAKE}"
 	fi
 }
 extract_cmake() {
-	echo "extract latest binary cmake"
-	tar xvf ${CMAKE}-Linux-x86_64.tar.gz
-	PATH=`pwd`/${CMAKE}-Linux-x86_64/bin:$PATH
+	if [ ! -d ${CMAKE} ]; then
+		echo "extract latest binary cmake"
+		tar xvf ${CMAKE}.tar.gz
+		PATH=`pwd`/${CMAKE}/bin:$PATH
+	else
+		echo "Already extracted ${CMAKE}"
+	fi
 }
 
 ########################################
@@ -110,6 +114,7 @@ extract_cmake() {
 OPENBLAS="OpenBLAS"
 get_openblas() {
   if [ ! -d ${OPENBLAS} ]; then
+		echo ">>>>> Getting " ${OpenBLAS} " <<<<<"
     git clone https://github.com/xianyi/${OPENBLAS}.git
     cd ${OPENBLAS}
     git checkout v0.3.13
@@ -139,8 +144,9 @@ build_openblas() {
 METIS="metis-5.1.0"
 get_metis() {
   if [ ! -f ${METIS}.tar.gz ]; then
+		echo ">>>>> Getting " ${METIS} " <<<<<"
     curl ${CURL_FLAGS} -L -O \
-	http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/${METIS}.tar.gz
+			http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/${METIS}.tar.gz
   else
     echo "Already downloaded ${METIS}.tar.gz"
   fi
@@ -169,15 +175,16 @@ build_metis() {
 PARMETIS="parmetis-4.0.3"
 get_parmetis() {
   if [ ! -f ${PARMETIS}.tar.gz ]; then
+		echo ">>>>> Getting " ${PARMETIS} " <<<<<"
     curl ${CURL_FLAGS} -L -O \
-	http://glaros.dtc.umn.edu/gkhome/fetch/sw/parmetis/${PARMETIS}.tar.gz
+			http://glaros.dtc.umn.edu/gkhome/fetch/sw/parmetis/${PARMETIS}.tar.gz
   else
     echo "Already downloaded ${PARMETIS}.tar.gz"
   fi
 }
 build_parmetis() {
   if [ -f ${LIB_ROOT}/lib/libparmetis.a ]; then
-    echo "skip building ${PARMETIS}"
+    echo "skip to build ${PARMETIS}"
     return
   fi
   if [ -f ${PARMETIS}.tar.gz ]; then
@@ -198,6 +205,7 @@ build_parmetis() {
 SCALAPACK="scalapack-2.1.0"
 get_scalapack() {
   if [ ! -f ${SCALAPACK}.tgz ]; then
+		echo ">>>>> Getting " ${SCALAPACK} " <<<<<"
     curl ${CURL_FLAGS} -L -O http://www.netlib.org/scalapack/${SCALAPACK}.tgz
   else
     echo "Already downloaded ${SCALAPACK}.tgz"
@@ -205,7 +213,7 @@ get_scalapack() {
 }
 build_scalapack() {
   if [ -f ${LIB_ROOT}/lib/libscalapack.a ]; then
-    echo "skip building ${SCALAPACK}"
+    echo "skip to build ${SCALAPACK}"
     return
   fi
   if [ -f ${SCALAPACK}.tgz ]; then
@@ -235,6 +243,7 @@ build_scalapack() {
 MUMPS="mumps"
 get_mumps() {
   if [ ! -d ${MUMPS} ]; then
+		echo ">>>>> Getting " ${MUMPS} " <<<<<"
     git clone https://github.com/scivision/${MUMPS}.git
     cd ${MUMPS}
     git checkout -b 5.3.5
@@ -246,7 +255,7 @@ build_mumps() {
   if [ -f ${LIB_ROOT}/lib/libpord.a \
          -a -f ${LIB_ROOT}/lib/libdmumps.a \
          -a -f ${LIB_ROOT}/lib/libmumps_common.a ]; then
-    echo "skip building ${MUMPS}"
+    echo "skip to build ${MUMPS}"
     return
   fi
   if [ -d ${MUMPS} ]; then
@@ -275,6 +284,7 @@ build_mumps() {
 TRILINOS="Trilinos"
 get_trilinos() {
   if [ ! -d ${TRILINOS} ]; then
+		echo "##### Getting " ${TRILINOS} "#####"
     git clone https://github.com/trilinos/${TRILINOS}.git
     cd ${TRILINOS}
     git checkout -b trilinos-release-13-0-1
@@ -284,7 +294,7 @@ get_trilinos() {
 }
 build_trilinos() {
   if [ -f ${LIB_ROOT}/TrilinosRepoVersion.txt ]; then
-    echo "skip building ${TRILINOS}"
+    echo "skip to build ${TRILINOS}"
     return
   fi
   if [ -d ${TRILINOS} ]; then
@@ -449,6 +459,7 @@ build_trilinos() {
 REFINER="REVOCAP_Refiner-1.1.04"
 get_refiner() {
   if [ ! -f ${REFINER}.tar.gz -o -d REVOCAP_Refiner ]; then
+		echo ">>>>> Getting " ${REFINER} " <<<<<"
     curl -L https://www.frontistr.com/download/link.php?${REFINER}.tar.gz -o ${REFINER}.tar.gz
     tar xvf ${REFINER}.tar.gz
     #git clone -b v1.1.04 https://github.com/FrontISTR/REVOCAP_Refiner
@@ -459,7 +470,7 @@ get_refiner() {
 }
 build_refiner() {
   if [ -f ${LIB_ROOT}/lib/libRcapRefiner.a ]; then
-    echo "skip building ${REFINER}"
+    echo "skip to build ${REFINER}"
     return
   fi
   if [ -f ${REFINER}.tar.gz ]; then
@@ -489,6 +500,7 @@ build_refiner() {
 FRONTISTR="FrontISTR"
 get_fistr() {
   if [ ! -d ${FRONTISTR} ]; then
+		echo ">>>>> Getting " ${FRONTISTR} " <<<<<"
     git clone https://gitlab.com/FrontISTR-Commons/${FRONTISTR}.git
     git checkout michioga/prep_oneapi
   else
@@ -579,6 +591,7 @@ case "$yn" in [yY]*) ;; *) echo "abort."; exit ;; esac
 get_cmake
 extract_cmake
 wait
+
 if [ ${COMPILER} = "GNU" ]; then
   get_openblas &
   get_scalapack &
