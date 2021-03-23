@@ -475,19 +475,27 @@ build_refiner() {
   fi
   if [ -f ${REFINER}.tar.gz ]; then
     tar xvf ${REFINER}.tar.gz
-    cd ${REFINER}
-    sed -i \
-      -e "s|^CC = gcc|CC = ${CC}|" \
-      -e "s|^CFLAGS = -O -Wall \$(DEBUGFLAG)|CFLAGS = ${CFLAGS}|" \
-      -e "s|^CXX = g++|CXX = ${CXX}|" \
-      -e "s|^CXXFLAGS = -O -Wall -fPIC \$(DEBUGFLAG)|CXXFLAGS = ${CXXFLAGS}|" \
-      -e "s|^F90 = gfortran|F90 = ${FC}|" \
-      -e "s|^FFLAGS = -Wall \$(DEBUGFLAG)|FFLAGS = ${FCFLAGS}|" \
-      -e "s|^LDSHARED = g++ -shared -s|LDSHARED = ${CXX} -shared -s|" \
-      MakefileConfig.in
-    make
-    cp lib/x86_64-linux/libRcapRefiner.a ${LIB_ROOT}/lib
-    cp Refiner/rcapRefiner.h ${LIB_ROOT}/include
+    if [ ${COMPILER} = "OneAPI" ]; then
+			cd ${REFINER}
+			cp MakefileConfig.LinuxIntelCompiler MakefileConfig.in
+			make
+ 	    cp lib/x86_64-linux-intel/libRcapRefiner.a ${LIB_ROOT}/lib
+ 	    cp Refiner/rcapRefiner.h ${LIB_ROOT}/include
+		else
+    	cd ${REFINER}
+	    sed -i \
+ 	     -e "s|^CC = gcc|CC = ${CC}|" \
+ 	     -e "s|^CFLAGS = -O -Wall \$(DEBUGFLAG)|CFLAGS = ${CFLAGS}|" \
+ 	     -e "s|^CXX = g++|CXX = ${CXX}|" \
+ 	     -e "s|^CXXFLAGS = -O -Wall -fPIC \$(DEBUGFLAG)|CXXFLAGS = ${CXXFLAGS}|" \
+ 	     -e "s|^F90 = gfortran|F90 = ${FC}|" \
+ 	     -e "s|^FFLAGS = -Wall \$(DEBUGFLAG)|FFLAGS = ${FCFLAGS}|" \
+ 	     -e "s|^LDSHARED = g++ -shared -s|LDSHARED = ${CXX} -shared -s|" \
+ 	     MakefileConfig.in
+ 	    make
+ 	    cp lib/x86_64-linux/libRcapRefiner.a ${LIB_ROOT}/lib
+ 	    cp Refiner/rcapRefiner.h ${LIB_ROOT}/include
+    fi
     cd ${BUILD_ROOT}
   else
     echo "No ${REFINER} archvie"
