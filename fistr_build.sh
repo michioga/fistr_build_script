@@ -86,9 +86,9 @@ set_compiler() {
 }
 
 ########################################
-# cmake-3.19.7
+# cmake-3.20.0
 ########################################
-CMAKE="cmake-3.19.7-Linux-x86_64"
+CMAKE="cmake-3.20.0-Linux-x86_64"
 get_cmake() {
 	if [ ! -d ${CMAKE} ]; then
 		echo ">>>>> Getting " ${CMAKE} " <<<<<"
