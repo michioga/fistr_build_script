@@ -88,24 +88,20 @@ set_compiler() {
 ########################################
 # cmake-3.20.0
 ########################################
-CMAKE="cmake-3.20.0-Linux-x86_64"
+CMAKE="cmake-3.20.0-linux-x86_64"
 get_cmake() {
 	if [ ! -d ${CMAKE} ]; then
 		echo ">>>>> Getting " ${CMAKE} " <<<<<"
     curl ${CURL_FLAGS} -L -O \
-			https://cmake.org/files/LatestRelease/${CMAKE}.tar.gz
+			https://cmake.org/files/v3.20/${CMAKE}.tar.gz
 	else
 		echo "Already download ${CMAKE}"
 	fi
 }
 extract_cmake() {
-	if [ ! -d ${CMAKE} ]; then
-		echo "extract latest binary cmake"
-		tar xvf ${CMAKE}.tar.gz
-		PATH=`pwd`/${CMAKE}/bin:$PATH
-	else
-		echo "Already extracted ${CMAKE}"
-	fi
+	echo "extract latest binary cmake"
+	tar xvf ${CMAKE}.tar.gz
+	PATH=`pwd`/${CMAKE}/bin:$PATH
 }
 
 ########################################
@@ -600,29 +596,29 @@ get_cmake
 extract_cmake
 wait
 
-if [ ${COMPILER} = "GNU" ]; then
-  get_openblas &
-  get_scalapack &
-fi
-get_metis &
-get_parmetis &
-get_refiner &
-get_mumps &
-get_trilinos &
-get_fistr &
-wait
-
-if [ ${COMPILER} = "GNU" ]; then
-  build_openblas &
-fi
-build_metis &
-build_parmetis &
-build_refiner &
-wait
-
-if [ ${COMPILER} = "GNU" ]; then
-  build_scalapack
-fi
-build_mumps
-build_trilinos
-build_fistr
+#if [ ${COMPILER} = "GNU" ]; then
+#  get_openblas &
+#  get_scalapack &
+#fi
+#get_metis &
+#get_parmetis &
+#get_refiner &
+#get_mumps &
+#get_trilinos &
+#get_fistr &
+#wait
+#
+#if [ ${COMPILER} = "GNU" ]; then
+#  build_openblas &
+#fi
+#build_metis &
+#build_parmetis &
+#build_refiner &
+#wait
+#
+#if [ ${COMPILER} = "GNU" ]; then
+#  build_scalapack
+#fi
+#build_mumps
+#build_trilinos
+#build_fistr

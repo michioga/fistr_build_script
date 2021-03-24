@@ -34,5 +34,5 @@ Thumbs.db
 .DS_Store
 cmake-3.19.7-Linux-x86_64/
 cmake-3.19.7-Linux-x86_64.tar.gz
-cmake-3.20.0-Linux-x86_64/
-cmake-3.20.0-Linux-x86_64.tar.gz
+cmake-3.20.0-linux-x86_64/
+cmake-3.20.0-linux-x86_64.tar.gz
