@@ -596,29 +596,29 @@ get_cmake
 extract_cmake
 wait
 
-#if [ ${COMPILER} = "GNU" ]; then
-#  get_openblas &
-#  get_scalapack &
-#fi
-#get_metis &
-#get_parmetis &
-#get_refiner &
-#get_mumps &
-#get_trilinos &
-#get_fistr &
-#wait
-#
-#if [ ${COMPILER} = "GNU" ]; then
-#  build_openblas &
-#fi
-#build_metis &
-#build_parmetis &
-#build_refiner &
-#wait
-#
-#if [ ${COMPILER} = "GNU" ]; then
-#  build_scalapack
-#fi
-#build_mumps
-#build_trilinos
-#build_fistr
+if [ ${COMPILER} = "GNU" ]; then
+  get_openblas &
+  get_scalapack &
+fi
+get_metis &
+get_parmetis &
+get_refiner &
+get_mumps &
+get_trilinos &
+get_fistr &
+wait
+
+if [ ${COMPILER} = "GNU" ]; then
+  build_openblas &
+fi
+build_metis &
+build_parmetis &
+build_refiner &
+wait
+
+if [ ${COMPILER} = "GNU" ]; then
+  build_scalapack
+fi
+build_mumps
+build_trilinos
+build_fistr
