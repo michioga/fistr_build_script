@@ -86,14 +86,14 @@ set_compiler() {
 }
 
 ########################################
-# cmake-3.20.0
+# cmake-3.20.1
 ########################################
-CMAKE="cmake-3.20.0-linux-x86_64"
+CMAKE="cmake-3.20.1-linux-x86_64"
 get_cmake() {
 	if [ ! -d ${CMAKE} ]; then
 		echo ">>>>> Getting " ${CMAKE} " <<<<<"
     curl ${CURL_FLAGS} -L -O \
-			https://cmake.org/files/v3.20/${CMAKE}.tar.gz
+			https://cmake.org/files/LatestRelease/${CMAKE}.tar.gz
 	else
 		echo "Already download ${CMAKE}"
 	fi
