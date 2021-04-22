@@ -506,7 +506,7 @@ get_fistr() {
   if [ ! -d ${FRONTISTR} ]; then
 		echo ">>>>> Getting " ${FRONTISTR} " <<<<<"
     git clone https://gitlab.com/FrontISTR-Commons/${FRONTISTR}.git
-    git checkout michioga/prep_oneapi
+    #git checkout michioga/prep_oneapi
   else
     echo "Already downloaded ${FRONTISTR}"
   fi
