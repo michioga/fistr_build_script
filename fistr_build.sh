@@ -105,7 +105,7 @@ extract_cmake() {
 }
 
 ########################################
-# OpenBLAS-0.3.13
+# OpenBLAS-0.3.14
 ########################################
 OPENBLAS="OpenBLAS"
 get_openblas() {
@@ -113,7 +113,7 @@ get_openblas() {
 		echo ">>>>> Getting " ${OpenBLAS} " <<<<<"
     git clone https://github.com/xianyi/${OPENBLAS}.git
     cd ${OPENBLAS}
-    git checkout v0.3.13
+    git checkout v0.3.14
   else
     echo "Already downloaded ${OPENBLAS}"
   fi
