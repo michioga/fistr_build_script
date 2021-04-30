@@ -2,7 +2,7 @@
 ###################################################################
 # Simple automatic build script for FrontISTR
 ###################################################################
-# Copyright (c) 2017-2020 Michio Ogawa
+# Copyright (c) 2017-2021 Michio Ogawa
 # This software is released under the MIT License, see LICENSE.txt
 ###################################################################
 
@@ -86,9 +86,9 @@ set_compiler() {
 }
 
 ########################################
-# cmake-3.20.1
+# cmake-3.20.2
 ########################################
-CMAKE="cmake-3.20.1-linux-x86_64"
+CMAKE="cmake-3.20.2-linux-x86_64"
 get_cmake() {
 	if [ ! -d ${CMAKE} ]; then
 		echo ">>>>> Getting " ${CMAKE} " <<<<<"
