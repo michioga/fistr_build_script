@@ -44,7 +44,7 @@ MAKE_PAR=4
 # IntelOMPI  : icc/icpc/ifort   + OpenMPI
 #
 
-COMPILER="OneAPI" # GNU | GNUMKLIMPI | Intel | OneAPI | IntelOMPI
+COMPILER="OneAPI" # GNU | GNUMKLIMPI | Intel | OneAPI | IntelOMPI | OneAPI
 # END modify.
 
 # Misc. settings
@@ -234,7 +234,7 @@ build_scalapack() {
 }
 
 ########################################
-# MUMPS-5.3.5
+# MUMPS-5.4.0.0
 ########################################
 MUMPS="mumps"
 get_mumps() {
@@ -242,7 +242,7 @@ get_mumps() {
 		echo ">>>>> Getting " ${MUMPS} " <<<<<"
     git clone https://github.com/scivision/${MUMPS}.git
     cd ${MUMPS}
-    git checkout -b 5.3.5
+    git checkout -b 5.4.0.0
   else
     echo "Already downloaded ${MUMPS}"
   fi
@@ -592,9 +592,9 @@ set_compiler
 read -p "${COMPILER} : ok? (y/N) " yn
 case "$yn" in [yY]*) ;; *) echo "abort."; exit ;; esac
 
-get_cmake
-extract_cmake
-wait
+#get_cmake
+#extract_cmake
+#wait
 
 if [ ${COMPILER} = "GNU" ]; then
   get_openblas &
